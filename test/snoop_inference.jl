@@ -855,6 +855,23 @@ end
     # pgdsgui(axs[2], rit; bystr="Inclusive", consts=true, interactive=false)
 end
 
+function countdown(io::IO, n::Int)
+    if n > 0
+        printdown(io, n)
+    end
+    return nothing
+end
+function printdown(io::IO, n::Int)
+    println(io, n)
+    countdown(io, n - 1)
+end
+@testset "cycles" begin
+    tinf = @snoop_inference countdown(IOBuffer(), 3)
+    names = [Method(frame).name for frame in flatten(tinf)]
+    @test :countdown ∈ names
+    @test :printdown ∈ names
+end
+
 @testset "Stale and precompile_blockers" begin
     cproj = Base.active_project()
     cd(joinpath("testmodules", "Stale")) do
