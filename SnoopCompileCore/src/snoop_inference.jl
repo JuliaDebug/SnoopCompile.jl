@@ -134,6 +134,7 @@ function addchildren!(parent::InferenceTimingNode, cis, backedges, miidx, backtr
         while true
             found = false
             for k in backedges[j]
+                k < j && continue   # don't get caught in cycles
                 be = cis[k]
                 if be ∉ handled
                     j = k
@@ -141,7 +142,7 @@ function addchildren!(parent::InferenceTimingNode, cis, backedges, miidx, backtr
                     break
                 end
             end
-            found || break
+            found || break  # quit when no unhandled backedge found
         end
         be ∈ handled && continue
         # bt1, bt2 = get(backtraces, Core.Compiler.get_ci_mi(be), (nothing, nothing))
