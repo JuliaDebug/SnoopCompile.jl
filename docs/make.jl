@@ -17,7 +17,7 @@ makedocs(
              "Advanced tutorials" => ["tutorials/snoop_inference_analysis.md", "tutorials/snoop_inference_parcel.md"],
              "Explanations" => ["explanations/tools.md", "explanations/gotchas.md", "explanations/fixing_inference.md", "explanations/invalidation_classes.md", "explanations/devs.md"],
              "reference.md",
-    ]
+    ],
 )
 
 deploydocs(

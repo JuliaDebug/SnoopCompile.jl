@@ -80,7 +80,7 @@ If you do have a lot of invalidations, [`precompile_blockers`](@ref) may be an e
 
 Let's start unpacking the output of `@snoop_inference` and see how to get more insight.
 First, notice that the output is an `InferenceTimingNode`: it's the root element of a tree of such nodes, all connected by caller-callee relationships.
-Indeed, this particular node is for `Core.Compiler.Timings.ROOT()`, a "dummy" node that is the root of all such trees.
+Indeed, this particular node is for `Base.Compiler.Timings.ROOT()`, a "dummy" node that is the root of all such trees.
 
 You may have noticed that this `ROOT` node prints with two numbers.
 It will be easier to understand their meaning if we first display the whole tree.
