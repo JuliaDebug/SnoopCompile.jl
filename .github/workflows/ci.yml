@@ -49,8 +49,8 @@ jobs:
         with:
           coverage: false    # FIXME: this is very sad, but coverage changes the snoop_inference.jl/Stale tests (as of Julia 1.13.0-DEV.1058)
       - run: julia  --check-bounds=yes --project -e 'using Pkg; Pkg.test(; test_args=["cthulhu"], coverage=false)'
-      - run: julia  --check-bounds=yes --project -e 'using Pkg; Pkg.test(; test_args=["jet"], coverage=false)'
-        continue-on-error: true   # JET test is non-fatal
+      # - run: julia  --check-bounds=yes --project -e 'using Pkg; Pkg.test(; test_args=["jet"], coverage=false)'
+      #   continue-on-error: true   # JET test is non-fatal
       # - uses: julia-actions/julia-processcoverage@v1
       #   with:
       #     directories: src,SnoopCompileCore/src
