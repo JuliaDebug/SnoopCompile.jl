@@ -954,7 +954,7 @@ end
     str = String(take!(io))
     @test occursin(r"inserting stale\(.* (in|@) StaleC.*invalidated:", str)
     @test !occursin("mt_backedges", str)
-    @test occursin(r"blocked.*InferenceTimingNode: .*/.* for StaleB.useA", str)
+    @test occursin(r"blocked.*InferenceTimingNode: .*/.* on StaleB.useA", str)
 
     Pkg.activate(cproj)
 end
