@@ -2,17 +2,21 @@
 AbstractTrees = "1520ce14-60c1-5f80-bbc7-55ef81b5835c"
 Cthulhu = "f68482b8-f384-11e8-15f7-abe071a5a75f"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-JET = "c3a54625-cd67-489e-a8e7-0a5a0ff4e31b"
+# JET = "c3a54625-cd67-489e-a8e7-0a5a0ff4e31b"
 MethodAnalysis = "85b6ec6f-f7df-4429-9514-a64bcd9ee824"
 PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
 SnoopCompile = "aa65fe97-06da-5843-b5b1-d5d13cad87d2"
 SnoopCompileCore = "e2b509da-e806-4183-be48-004708413034"
 
+[sources]
+SnoopCompile = {path = ".."}
+SnoopCompileCore = {path = "../SnoopCompileCore"}
+
 [compat]
 AbstractTrees = "0.4"
 Cthulhu = "2"
 Documenter = "1"
-JET = "0.9"
+# JET = "0.9"
 MethodAnalysis = "0.4"
 PyPlot = "2"
 SnoopCompile = "3"

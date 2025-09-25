@@ -50,7 +50,7 @@ julia> mapfib(list) = map(fib, list)
 mapfib (generic function with 1 method)
 
 julia> tinf = @snoop_inference try mapfib(list) catch end
-InferenceTimingNode: 0.049825/0.071476 on Core.Compiler.Timings.ROOT() with 5 direct children
+InferenceTimingNode: 0.049825/0.071476 on Base.Compiler.Timings.ROOT() with 5 direct children
 
 julia> @report_call mapfib(list)
 No errors detected
