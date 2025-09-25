@@ -1,13 +1,18 @@
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.6"
+julia_version = "1.12.0-rc2"
 manifest_format = "2.0"
-project_hash = "89e590199e02a15939f840de2424918dd74270f1"
+project_hash = "d90962e975758e9fa3b9a2ac3b917ed0c7a68d12"
 
 [[deps.Blackjack]]
 deps = ["PrecompileTools"]
 path = "/home/runner/work/SnoopCompile.jl/SnoopCompile.jl/docs/build/tutorials/Blackjack"
-uuid = "c2607c3a-7c7e-42a0-bfb5-f571df47fdbe"
+uuid = "edef1b43-8355-4e85-be64-b751cde808cc"
+version = "0.1.0"
+
+[[deps.BlackjackFacecards]]
+path = "."
+uuid = "9bf7d572-ffb8-4d5d-b87d-e9ba2f7dd3de"
 version = "0.1.0"
 
 [[deps.Dates]]
@@ -17,9 +22,9 @@ version = "1.11.0"
 
 [[deps.PrecompileTools]]
 deps = ["Preferences"]
-git-tree-sha1 = "5aa36f7049a63a1528fe8f7c3f2113413ffd4e1f"
+git-tree-sha1 = "07a921781cab75691315adc645096ed5e370cb77"
 uuid = "aea7be01-6a6a-4083-8856-8a6e6704d82a"
-version = "1.2.1"
+version = "1.3.3"
 
 [[deps.Preferences]]
 deps = ["TOML"]
