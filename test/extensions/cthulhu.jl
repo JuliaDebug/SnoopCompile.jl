@@ -6,6 +6,8 @@ using Cthulhu.Testing
 using Pkg
 using Test
 
+# NOTE: the Cthulhu test is handled specially in `.github/workflows/ci.yml`
+
 macro with_try_stderr(out, expr)
     quote
         try

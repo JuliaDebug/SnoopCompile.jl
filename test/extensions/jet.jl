@@ -3,6 +3,8 @@ using SnoopCompile
 using Test
 using JET, Cthulhu
 
+# NOTE: the JET test is handled specially in `.github/workflows/ci.yml`
+
 @testset "JET integration" begin
     function mysum(c)   # vendor a simple version of `sum`
         isempty(c) && return zero(eltype(c))
