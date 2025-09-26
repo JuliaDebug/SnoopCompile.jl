@@ -1,7 +1,7 @@
 using Test
 using SnoopCompile
 
-if !isempty(ARGS)
+if !isempty(ARGS)  # `.github/workflows/ci.yml` sets ARGS to run these tests on CI, but they don't run by default from `Pkg.test`
     "cthulhu" ∈ ARGS && include("extensions/cthulhu.jl")
     "jet" ∈ ARGS && include("extensions/jet.jl")
 else
