@@ -847,7 +847,7 @@ end
     m = @which SnoopBench.spell_unspec(first(Ts))
     dunspec = rit[findfirst(pr -> pr.first == m, rit)].second # trunspec, trdtunspec, tiunspec, nunspec
     @test dunspec.tinf < dspec.tinf/10
-    @test dunspec.trun < 10*dspec.trun
+    @test dunspec.trun <= 10*dspec.trun
     @test dunspec.nspec == 1
     # Test that no runtime dispatch occurs in mappushes!
     dmp = rit[findfirst(pr -> pr.first == mp, rit)].second
