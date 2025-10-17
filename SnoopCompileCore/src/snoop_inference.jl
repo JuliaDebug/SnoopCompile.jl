@@ -134,7 +134,7 @@ function addchildren!(parent::InferenceTimingNode, cis, backedges, miidx, backtr
         while true
             found = false
             for k in backedges[j]
-                k < j && continue   # don't get caught in cycles
+                k ≤ j && continue   # don't get caught in cycles
                 be = cis[k]
                 if be ∉ handled
                     j = k
