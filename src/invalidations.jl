@@ -191,7 +191,7 @@ struct MethodInvalidations <: AbstractMethodInvalidations
     mt_disable::Vector{MethodInstance}
 end
 methinv_storage() = Pair{Type,InstanceNode}[], InstanceNode[], MethodInstance[], MethodInstance[]
-function MethodInvalidations(method::Method, reason::Symbol)
+function MethodInvalidations(method, reason::Symbol)
     MethodInvalidations(method, reason, methinv_storage()...)
 end
 
@@ -580,6 +580,7 @@ function invalidation_trees(list::InvalidationLists; consolidate::Bool=true, kwa
                 for (edge, node) in etree.mt_backedges
                     for mtree in mtrees
                         mtree.reason === :deleting || continue
+                        isnothing(mtree.method) && continue
                         mtree.method.sig <: edge || continue
                         # This edge is covered by the deleted method
                         join_invalidations!(mtree.mt_backedges, edge => node)
