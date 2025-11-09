@@ -872,6 +872,23 @@ end
     @test :printdown ∈ names
 end
 
+function countdownrecursive(io::IO, n::Int)
+    if n == 0
+        return printfinal(io)
+    end
+    return countdownrecursive(io, n-1)
+end
+function printfinal(io::IO)
+    println(io, "final")
+    return nothing
+end
+@testset "cycles - recursive" begin
+    tinf = @snoop_inference countdownrecursive(IOBuffer(), 3)
+    names = [Method(frame).name for frame in flatten(tinf)]
+    @test :countdownrecursive ∈ names
+    @test :printfinal ∈ names
+end
+
 @testset "Stale and precompile_blockers" begin
     cproj = Base.active_project()
     cd(joinpath("testmodules", "Stale")) do
