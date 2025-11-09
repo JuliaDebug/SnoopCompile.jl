@@ -3,7 +3,7 @@
     "julia_NamedTuple_442":
         instructions: 25
         basicblocks: 1
-  time_ns: 1224494
+  time_ns: 1223309
   optlevel: 2
   after: 
     "julia_NamedTuple_442":
@@ -11,178 +11,21 @@
         basicblocks: 1
 - 
   before: 
-  time_ns: 141255
-  optlevel: 2
+    "julia_#peakflops#67_449":
+        instructions: 78
+        basicblocks: 7
+  time_ns: 1285865
+  optlevel: 1
   after: 
-- 
-  before: 
-  time_ns: 99496
-  optlevel: 2
-  after: 
-- 
-  before: 
-  time_ns: 127599
-  optlevel: 2
-  after: 
-- 
-  before: 
-  time_ns: 83336
-  optlevel: 2
-  after: 
-- 
-  before: 
-  time_ns: 85951
-  optlevel: 2
-  after: 
-- 
-  before: 
-  time_ns: 79860
-  optlevel: 2
-  after: 
-- 
-  before: 
-  time_ns: 92744
-  optlevel: 2
-  after: 
-- 
-  before: 
-  time_ns: 85050
-  optlevel: 2
-  after: 
-- 
-  before: 
-  time_ns: 111288
-  optlevel: 2
-  after: 
-- 
-  before: 
-  time_ns: 72626
-  optlevel: 2
-  after: 
-- 
-  before: 
-  time_ns: 71935
-  optlevel: 2
-  after: 
-- 
-  before: 
-  time_ns: 82074
-  optlevel: 2
-  after: 
-- 
-  before: 
-    "julia_require_stdlib_458":
-        instructions: 437
-        basicblocks: 82
-  time_ns: 5272079
-  optlevel: 2
-  after: 
-    "julia_require_stdlib_458":
-        instructions: 228
-        basicblocks: 32
-- 
-  before: 
-    "julia_run_package_callbacks_492":
-        instructions: 463
-        basicblocks: 86
-    "julia_run_package_callbacks_492u503":
-        instructions: 3
-        basicblocks: 1
-  time_ns: 6859704
-  optlevel: 2
-  after: 
-    "julia_run_package_callbacks_492":
-        instructions: 244
-        basicblocks: 36
-- 
-  before: 
-    "julia__tryrequire_from_serialized_843":
-        instructions: 435
-        basicblocks: 73
-  time_ns: 5479317
-  optlevel: 2
-  after: 
-    "julia__tryrequire_from_serialized_843":
-        instructions: 211
-        basicblocks: 29
-- 
-  before: 
-    "julia__require_search_from_serialized_859":
-        instructions: 19
-        basicblocks: 1
-  time_ns: 924863
-  optlevel: 2
-  after: 
-    "julia__require_search_from_serialized_859":
-        instructions: 21
-        basicblocks: 1
-- 
-  before: 
-    "julia_#_include_from_serialized#862_672":
-        instructions: 1927
-        basicblocks: 373
-    "julia_#_include_from_serialized#862_672u677":
-        instructions: 3
-        basicblocks: 1
-    "julia_#_include_from_serialized#862_672u690":
-        instructions: 3
-        basicblocks: 1
-  time_ns: 25225649
-  optlevel: 2
-  after: 
-    "julia_#_include_from_serialized#862_672":
-        instructions: 932
-        basicblocks: 125
-- 
-  before: 
-    "julia_register_restored_modules_782":
-        instructions: 956
-        basicblocks: 154
-  time_ns: 13945092
-  optlevel: 2
-  after: 
-    "julia_register_restored_modules_782":
-        instructions: 470
-        basicblocks: 67
-- 
-  before: 
-    "julia_print_time_imports_report_init_823":
-        instructions: 163
-        basicblocks: 28
-  time_ns: 2650126
-  optlevel: 2
-  after: 
-    "julia_print_time_imports_report_init_823":
-        instructions: 109
-        basicblocks: 13
-- 
-  before: 
-    "julia__tryrequire_from_serialized_1002":
-        instructions: 530
-        basicblocks: 98
-  time_ns: 7598288
-  optlevel: 2
-  after: 
-    "julia__tryrequire_from_serialized_1002":
-        instructions: 242
-        basicblocks: 31
-- 
-  before: 
-    "julia_#printstyled#847_773":
-        instructions: 80
-        basicblocks: 8
-  time_ns: 2013984
-  optlevel: 2
-  after: 
-    "julia_#printstyled#847_773":
-        instructions: 66
-        basicblocks: 6
+    "julia_#peakflops#67_449":
+        instructions: 70
+        basicblocks: 3
 - 
   before: 
     "julia_peakflops_445":
         instructions: 13
         basicblocks: 1
-  time_ns: 755435
+  time_ns: 274239
   optlevel: 1
   after: 
     "julia_peakflops_445":
@@ -190,250 +33,45 @@
         basicblocks: 1
 - 
   before: 
-    "julia_#printstyled#847_764":
-        instructions: 82
-        basicblocks: 8
-  time_ns: 1772200
-  optlevel: 2
-  after: 
-    "julia_#printstyled#847_764":
-        instructions: 66
-        basicblocks: 6
-- 
-  before: 
-    "julia___require_prelocked_564":
-        instructions: 2958
-        basicblocks: 450
-    "julia___require_prelocked_564u589":
-        instructions: 3
-        basicblocks: 1
-    "julia___require_prelocked_564u617":
-        instructions: 3
-        basicblocks: 1
-    "julia___require_prelocked_564u633":
-        instructions: 3
-        basicblocks: 1
-    "julia___require_prelocked_564u639":
-        instructions: 3
-        basicblocks: 1
-  time_ns: 37003489
-  optlevel: 2
-  after: 
-    "julia___require_prelocked_564":
-        instructions: 1526
-        basicblocks: 155
-- 
-  before: 
-    "julia_run_module_init_805":
-        instructions: 78
-        basicblocks: 32
-    "julia_run_module_init_805u808":
-        instructions: 3
-        basicblocks: 1
-  time_ns: 1404182
-  optlevel: 2
-  after: 
-    "julia_run_module_init_805":
-        instructions: 35
-        basicblocks: 5
-- 
-  before: 
-    "julia__require_prelocked_484":
-        instructions: 223
-        basicblocks: 34
-  time_ns: 2950328
-  optlevel: 2
-  after: 
-    "julia__require_prelocked_484":
-        instructions: 120
-        basicblocks: 14
-- 
-  before: 
-    "julia__require_prelocked_561":
-        instructions: 17
-        basicblocks: 1
-  time_ns: 1186554
-  optlevel: 2
-  after: 
-    "julia__require_prelocked_561":
-        instructions: 21
-        basicblocks: 1
-- 
-  before: 
-    "julia__tryrequire_from_serialized_645":
-        instructions: 641
-        basicblocks: 108
-  time_ns: 9295057
-  optlevel: 2
-  after: 
-    "julia__tryrequire_from_serialized_645":
-        instructions: 326
-        basicblocks: 38
-- 
-  before: 
-    "julia__require_search_from_serialized_1022":
-        instructions: 20
-        basicblocks: 1
-  time_ns: 1029860
-  optlevel: 2
-  after: 
-    "julia__require_search_from_serialized_1022":
-        instructions: 22
-        basicblocks: 1
-- 
-  before: 
-    "julia_#_require_search_from_serialized#878_1026":
-        instructions: 4911
-        basicblocks: 808
-    "julia_#_require_search_from_serialized#878_1026u1042":
-        instructions: 3
-        basicblocks: 1
-    "julia_#_require_search_from_serialized#878_1026u1064":
-        instructions: 3
-        basicblocks: 1
-    "julia_#_require_search_from_serialized#878_1026u1073":
-        instructions: 3
-        basicblocks: 1
-    "julia_#_require_search_from_serialized#878_1026u1081":
-        instructions: 3
-        basicblocks: 1
-  time_ns: 94882888
-  optlevel: 2
-  after: 
-    "julia_#_require_search_from_serialized#878_1026":
-        instructions: 2521
-        basicblocks: 246
-- 
-  before: 
-    "julia_#peakflops#66_449":
-        instructions: 78
-        basicblocks: 7
-  time_ns: 949540
-  optlevel: 1
-  after: 
-    "julia_#peakflops#66_449":
-        instructions: 70
-        basicblocks: 3
-- 
-  before: 
-    "julia_print_time_imports_report_747":
-        instructions: 192
-        basicblocks: 33
-  time_ns: 3072868
-  optlevel: 2
-  after: 
-    "julia_print_time_imports_report_747":
-        instructions: 130
-        basicblocks: 17
-- 
-  before: 
-    "julia_run_extension_callbacks_517":
-        instructions: 965
-        basicblocks: 167
-  time_ns: 17224596
-  optlevel: 2
-  after: 
-    "julia_run_extension_callbacks_517":
-        instructions: 407
-        basicblocks: 60
-- 
-  before: 
-    "julia_run_extension_callbacks_532":
-        instructions: 341
-        basicblocks: 42
-    "julia_run_extension_callbacks_532u539":
-        instructions: 3
-        basicblocks: 1
-    "julia_run_extension_callbacks_532u553":
-        instructions: 3
-        basicblocks: 1
-  time_ns: 4536170
-  optlevel: 2
-  after: 
-    "julia_run_extension_callbacks_532":
-        instructions: 233
-        basicblocks: 24
-- 
-  before: 
-    "julia_#_require_search_from_serialized#878_863":
-        instructions: 4882
-        basicblocks: 808
-    "julia_#_require_search_from_serialized#878_863u879":
-        instructions: 3
-        basicblocks: 1
-    "julia_#_require_search_from_serialized#878_863u901":
-        instructions: 3
-        basicblocks: 1
-    "julia_#_require_search_from_serialized#878_863u910":
-        instructions: 3
-        basicblocks: 1
-    "julia_#_require_search_from_serialized#878_863u918":
-        instructions: 3
-        basicblocks: 1
-  time_ns: 91129405
-  optlevel: 2
-  after: 
-    "julia_#_require_search_from_serialized#878_863":
-        instructions: 2478
-        basicblocks: 246
-- 
-  before: 
-    "julia_#_include_from_serialized#862_927":
-        instructions: 1921
-        basicblocks: 373
-    "julia_#_include_from_serialized#862_927u932":
-        instructions: 3
-        basicblocks: 1
-    "julia_#_include_from_serialized#862_927u945":
-        instructions: 3
-        basicblocks: 1
-  time_ns: 24840508
-  optlevel: 2
-  after: 
-    "julia_#_include_from_serialized#862_927":
-        instructions: 923
-        basicblocks: 125
-- 
-  before: 
-    "julia_peakflops_1090":
+    "julia_peakflops_457":
         instructions: 19
         basicblocks: 1
-  time_ns: 934802
+  time_ns: 765149
   optlevel: 2
   after: 
-    "julia_peakflops_1090":
+    "julia_peakflops_457":
         instructions: 15
         basicblocks: 1
 - 
   before: 
-    "julia_ones_1092":
+    "julia_ones_459":
         instructions: 197
         basicblocks: 33
-  time_ns: 4346485
+  time_ns: 4322066
   optlevel: 2
   after: 
-    "julia_ones_1092":
+    "julia_ones_459":
         instructions: 98
         basicblocks: 15
 - 
   before: 
-    "julia_*_1099":
+    "julia_*_466":
         instructions: 114
         basicblocks: 14
-  time_ns: 2544478
+  time_ns: 2583201
   optlevel: 2
   after: 
-    "julia_*_1099":
+    "julia_*_466":
         instructions: 72
         basicblocks: 8
 - 
   before: 
-    "julia_getindex_1106":
+    "julia_getindex_473":
         instructions: 98
         basicblocks: 18
-  time_ns: 1842813
+  time_ns: 1817411
   optlevel: 2
   after: 
-    "julia_getindex_1106":
+    "julia_getindex_473":
         instructions: 32
         basicblocks: 3

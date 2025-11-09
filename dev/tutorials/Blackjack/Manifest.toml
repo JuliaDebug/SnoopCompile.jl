@@ -1,12 +1,12 @@
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.12.0-rc2"
+julia_version = "1.12.1"
 manifest_format = "2.0"
-project_hash = "ee40fc96a5abdc34fdb3649c92919db150f10bb4"
+project_hash = "f4fcdee4a3e09d9c80caedea17e50d50aa677742"
 
 [[deps.Blackjack]]
 path = "."
-uuid = "012785de-3ad9-40eb-95e5-f1833f73a45d"
+uuid = "4c9388de-29bb-4495-884b-16087504c956"
 version = "0.1.0"
 
 [[deps.Dates]]

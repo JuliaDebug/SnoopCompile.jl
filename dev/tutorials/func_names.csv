@@ -1,29 +1,7 @@
 julia_NamedTuple_442	Tuple{Type{NamedTuple{(:eltype, :ntrials, :parallel), T} where T<:Tuple}, Tuple{typeof(DataType), Int64, Bool}}
 julia_peakflops_445	Tuple{typeof(InteractiveUtils.peakflops)}
-julia_#peakflops#66_449	Tuple{InteractiveUtils.var"##peakflops#66", typeof(DataType), Int64, Bool, typeof(InteractiveUtils.peakflops), Int64}
-julia_require_stdlib_458	Tuple{typeof(Base.require_stdlib), Base.PkgId, Nothing, Module}
-julia__require_prelocked_484	Tuple{typeof(Base._require_prelocked), Base.PkgId, Nothing}
-julia_run_package_callbacks_492	Tuple{typeof(Base.run_package_callbacks), Base.PkgId}
-julia_run_extension_callbacks_517	Tuple{typeof(Base.run_extension_callbacks), Base.PkgId}
-julia_run_extension_callbacks_532	Tuple{typeof(Base.run_extension_callbacks), Base.ExtensionId}
-julia__require_prelocked_561	Tuple{typeof(Base._require_prelocked), Base.PkgId}
-julia___require_prelocked_564	Tuple{typeof(Base.__require_prelocked), Base.PkgId, Nothing}
-julia__tryrequire_from_serialized_645	Tuple{typeof(Base._tryrequire_from_serialized), Base.PkgId, String, String}
-julia_#_include_from_serialized#862_672	Tuple{Base.var"##_include_from_serialized#862", Bool, typeof(Base._include_from_serialized), Base.PkgId, String, String, Array{Any, 1}}
-julia_print_time_imports_report_747	Tuple{typeof(Base.print_time_imports_report), Module, UInt64, UInt64, UInt64}
-julia_#printstyled#847_764	Tuple{Base.var"##printstyled#847", Bool, Bool, Bool, Bool, Bool, Bool, Symbol, typeof(Base.printstyled), String}
-julia_#printstyled#847_773	Tuple{Base.var"##printstyled#847", Bool, Bool, Bool, Bool, Bool, Bool, Int64, typeof(Base.printstyled), String}
-julia_register_restored_modules_782	Tuple{typeof(Base.register_restored_modules), Core.SimpleVector, Base.PkgId, String}
-julia_run_module_init_805	Tuple{typeof(Base.run_module_init), Module, Int64}
-julia_print_time_imports_report_init_823	Tuple{typeof(Base.print_time_imports_report_init), Module, Int64, UInt64, UInt64, UInt64}
-julia__tryrequire_from_serialized_843	Tuple{typeof(Base._tryrequire_from_serialized), Base.PkgId, UInt128}
-julia__require_search_from_serialized_859	Tuple{typeof(Base._require_search_from_serialized), Base.PkgId, String, UInt128, Bool}
-julia_#_require_search_from_serialized#878_863	Tuple{Base.var"##_require_search_from_serialized#878", Nothing, Array{String, 1}, typeof(Base._require_search_from_serialized), Base.PkgId, String, UInt128, Bool}
-julia_#_include_from_serialized#862_927	Tuple{Base.var"##_include_from_serialized#862", Bool, typeof(Base._include_from_serialized), Base.PkgId, String, Nothing, Array{Any, 1}}
-julia__tryrequire_from_serialized_1002	Tuple{typeof(Base._tryrequire_from_serialized), Base.PkgId, String, Nothing}
-julia__require_search_from_serialized_1022	Tuple{typeof(Core.kwcall), NamedTuple{(:reasons,), Tuple{Base.Dict{String, Int64}}}, typeof(Base._require_search_from_serialized), Base.PkgId, String, UInt128, Bool}
-julia_#_require_search_from_serialized#878_1026	Tuple{Base.var"##_require_search_from_serialized#878", Base.Dict{String, Int64}, Array{String, 1}, typeof(Base._require_search_from_serialized), Base.PkgId, String, UInt128, Bool}
-julia_peakflops_1090	Tuple{typeof(Core.kwcall), NamedTuple{(:eltype, :ntrials, :parallel), Tuple{typeof(DataType), Int64, Bool}}, typeof(LinearAlgebra.peakflops), Int64}
-julia_ones_1092	Tuple{typeof(Base.ones), Type{Float64}, Int64, Int64}
-julia_*_1099	Tuple{typeof(Base.:(*)), Array{Float64, 2}, Array{Float64, 2}}
-julia_getindex_1106	Tuple{typeof(Base.getindex), Array{Float64, 2}, Int64, Int64}
+julia_#peakflops#67_449	Tuple{InteractiveUtils.var"##peakflops#67", typeof(DataType), Int64, Bool, typeof(InteractiveUtils.peakflops), Int64}
+julia_peakflops_457	Tuple{typeof(Core.kwcall), NamedTuple{(:eltype, :ntrials, :parallel), Tuple{typeof(DataType), Int64, Bool}}, typeof(LinearAlgebra.peakflops), Int64}
+julia_ones_459	Tuple{typeof(Base.ones), Type{Float64}, Int64, Int64}
+julia_*_466	Tuple{typeof(Base.:(*)), Array{Float64, 2}, Array{Float64, 2}}
+julia_getindex_473	Tuple{typeof(Base.getindex), Array{Float64, 2}, Int64, Int64}
