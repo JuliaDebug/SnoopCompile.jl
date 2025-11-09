@@ -3,7 +3,7 @@
     "julia_NamedTuple_442":
         instructions: 25
         basicblocks: 1
-  time_ns: 1223309
+  time_ns: 1148750
   optlevel: 2
   after: 
     "julia_NamedTuple_442":
@@ -14,7 +14,7 @@
     "julia_#peakflops#67_449":
         instructions: 78
         basicblocks: 7
-  time_ns: 1285865
+  time_ns: 1314605
   optlevel: 1
   after: 
     "julia_#peakflops#67_449":
@@ -25,7 +25,7 @@
     "julia_peakflops_445":
         instructions: 13
         basicblocks: 1
-  time_ns: 274239
+  time_ns: 291309
   optlevel: 1
   after: 
     "julia_peakflops_445":
@@ -36,7 +36,7 @@
     "julia_peakflops_457":
         instructions: 19
         basicblocks: 1
-  time_ns: 765149
+  time_ns: 721953
   optlevel: 2
   after: 
     "julia_peakflops_457":
@@ -47,7 +47,7 @@
     "julia_ones_459":
         instructions: 197
         basicblocks: 33
-  time_ns: 4322066
+  time_ns: 3997708
   optlevel: 2
   after: 
     "julia_ones_459":
@@ -58,7 +58,7 @@
     "julia_*_466":
         instructions: 114
         basicblocks: 14
-  time_ns: 2583201
+  time_ns: 2390300
   optlevel: 2
   after: 
     "julia_*_466":
@@ -69,7 +69,7 @@
     "julia_getindex_473":
         instructions: 98
         basicblocks: 18
-  time_ns: 1817411
+  time_ns: 1735916
   optlevel: 2
   after: 
     "julia_getindex_473":
