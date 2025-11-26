@@ -3,7 +3,7 @@
     "julia_NamedTuple_442":
         instructions: 25
         basicblocks: 1
-  time_ns: 1226428
+  time_ns: 1180713
   optlevel: 2
   after: 
     "julia_NamedTuple_442":
@@ -11,21 +11,10 @@
         basicblocks: 1
 - 
   before: 
-    "julia_#peakflops#67_449":
-        instructions: 78
-        basicblocks: 7
-  time_ns: 1226878
-  optlevel: 1
-  after: 
-    "julia_#peakflops#67_449":
-        instructions: 70
-        basicblocks: 3
-- 
-  before: 
     "julia_peakflops_445":
         instructions: 13
         basicblocks: 1
-  time_ns: 261558
+  time_ns: 714342
   optlevel: 1
   after: 
     "julia_peakflops_445":
@@ -33,10 +22,21 @@
         basicblocks: 1
 - 
   before: 
+    "julia_#peakflops#67_449":
+        instructions: 78
+        basicblocks: 7
+  time_ns: 738738
+  optlevel: 1
+  after: 
+    "julia_#peakflops#67_449":
+        instructions: 70
+        basicblocks: 3
+- 
+  before: 
     "julia_peakflops_457":
         instructions: 19
         basicblocks: 1
-  time_ns: 1261092
+  time_ns: 697300
   optlevel: 2
   after: 
     "julia_peakflops_457":
@@ -47,7 +47,7 @@
     "julia_ones_459":
         instructions: 197
         basicblocks: 33
-  time_ns: 4525822
+  time_ns: 4168767
   optlevel: 2
   after: 
     "julia_ones_459":
@@ -58,7 +58,7 @@
     "julia_*_466":
         instructions: 114
         basicblocks: 14
-  time_ns: 2510103
+  time_ns: 2461702
   optlevel: 2
   after: 
     "julia_*_466":
@@ -69,7 +69,7 @@
     "julia_getindex_473":
         instructions: 98
         basicblocks: 18
-  time_ns: 1790570
+  time_ns: 1812842
   optlevel: 2
   after: 
     "julia_getindex_473":
