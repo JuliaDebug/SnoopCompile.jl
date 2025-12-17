@@ -1,0 +1,44 @@
+- 
+  before: 
+    "julia_NamedTuple_409":
+        instructions: 24
+        basicblocks: 1
+  time_ns: 1221906
+  optlevel: 2
+  after: 
+    "julia_NamedTuple_409":
+        instructions: 19
+        basicblocks: 1
+- 
+  before: 
+    "julia_peakflops_412":
+        instructions: 12
+        basicblocks: 1
+  time_ns: 710484
+  optlevel: 1
+  after: 
+    "julia_peakflops_412":
+        instructions: 9
+        basicblocks: 1
+- 
+  before: 
+    "julia_#peakflops#88_416":
+        instructions: 75
+        basicblocks: 7
+  time_ns: 1006772
+  optlevel: 1
+  after: 
+    "julia_#peakflops#88_416":
+        instructions: 69
+        basicblocks: 3
+- 
+  before: 
+    "julia_peakflops_423":
+        instructions: 29
+        basicblocks: 1
+  time_ns: 1002354
+  optlevel: 2
+  after: 
+    "julia_peakflops_423":
+        instructions: 45
+        basicblocks: 1

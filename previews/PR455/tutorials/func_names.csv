@@ -1,0 +1,4 @@
+julia_NamedTuple_409	Tuple{Type{NamedTuple{(:eltype, :ntrials, :parallel), T} where T<:Tuple}, Tuple{typeof(DataType), Int64, Bool}}
+julia_peakflops_412	Tuple{typeof(InteractiveUtils.peakflops)}
+julia_#peakflops#88_416	Tuple{InteractiveUtils.var"##peakflops#88", typeof(DataType), Int64, Bool, typeof(InteractiveUtils.peakflops), Int64}
+julia_peakflops_423	Tuple{typeof(Core.kwcall), NamedTuple{(:eltype, :ntrials, :parallel), Tuple{typeof(DataType), Int64, Bool}}, typeof(LinearAlgebra.peakflops), Int64}
