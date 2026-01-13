@@ -6,6 +6,10 @@ using Cthulhu.Testing
 using Pkg
 using Test
 
+@static if Base.pkgversion(Cthulhu) < v"3.0.0-"
+    const VirtualTerminal = FakeTerminal
+end
+
 # NOTE: the Cthulhu test is handled specially in `.github/workflows/ci.yml`
 
 macro with_try_stderr(out, expr)
@@ -56,7 +60,7 @@ end
             tree = last(trees)
             sig, root = only(tree.mt_backedges)
 
-            term = FakeTerminal()
+            term = VirtualTerminal()
             t = @async begin
                 @with_try_stderr term.output redirect_stderr(term.error) do
                     ascend(term, root)
@@ -80,7 +84,7 @@ end
         itrigs = inference_triggers(tinf; exclude_toplevel=false)
         itrig = last(itrigs)
 
-        term = FakeTerminal()
+        term = VirtualTerminal()
         t = @async begin
             @with_try_stderr term.output ascend(term, itrig; interruptexc=false)
         end
