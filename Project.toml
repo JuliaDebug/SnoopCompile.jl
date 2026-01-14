@@ -1,6 +1,6 @@
 name = "SnoopCompile"
 uuid = "aa65fe97-06da-5843-b5b1-d5d13cad87d2"
-version = "3.2.4"
+version = "3.2.5"
 author = ["Tim Holy <tim.holy@gmail.com>", "Shuhei Kadowaki <aviatesk@gmail.com>"]
 
 [deps]
