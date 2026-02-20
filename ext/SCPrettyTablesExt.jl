@@ -32,10 +32,10 @@ function SnoopCompile.report_invalidations(io::IO = stdout;
         Float16(100 * inv / sum_invs)
     end
     meth_name = map(trees) do inv
-        "$(inv.method.name)"
+        isnothing(inv.method) ? "unknown" : "$(inv.method.name)"
     end
     fileinfo = map(trees) do inv
-        "$(process_filename(string(inv.method.file))):$(inv.method.line)"
+        isnothing(inv.method) ? "unknown" : "$(process_filename(string(inv.method.file))):$(inv.method.line)"
     end
 
     table_data = hcat(
