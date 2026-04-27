@@ -284,6 +284,51 @@ end
     Pkg.activate(cproj)
 end
 
+@testset "Unknown-tree attribution via logmeths cross-reference" begin
+    # When a package is loaded and its precompiled CIs are already C-level invalid
+    # (max_world=0), verify_method returns early without emitting an
+    # insert_backedges_callee logedge. The callee CI only appears as the `cause`
+    # argument of a verify_methods logedge. SnoopCompile must cross-reference the
+    # :unknown etree roots against the mtrees so that transitive callers are
+    # attributed to the correct inserting method rather than "unknown nothing".
+    cproj = Base.active_project()
+    olddir = pwd()
+    cd(joinpath(@__DIR__, "testmodules", "Invalidation"))
+    Pkg.activate(pwd())
+    Pkg.instantiate()
+    Pkg.precompile()
+    invs = @snoop_invalidations begin
+        using PkgE
+        @eval PkgE callee(x::Int) = 1
+        using PkgF
+    end
+    trees = invalidation_trees(invs)
+
+    # The consolidated trees should contain exactly one inserting tree (for callee(::Int))
+    # and no :unknown trees.
+    unknown_trees = filter(t -> t.reason === :unknown, trees)
+    inserting_trees = filter(t -> t.reason === :inserting, trees)
+    @test isempty(unknown_trees)
+    @test length(inserting_trees) == 1
+
+    callee_tree = only(inserting_trees)
+    @test callee_tree.method == which(PkgE.callee, (Int,))
+
+    # transitive_caller (from PkgF) must appear somewhere in the inserting tree
+    function any_mi_match(nodes, pred)
+        for node in nodes
+            pred(node.mi) && return true
+            any_mi_match(node.children, pred) && return true
+        end
+        return false
+    end
+    transitive_mi = only(SnoopCompile.specializations(which(PkgF.transitive_caller, (Int,))))
+    @test any_mi_match(callee_tree.backedges, mi -> mi === transitive_mi)
+
+    cd(olddir)
+    Pkg.activate(cproj)
+end
+
 # This needs to come after "Edge invalidations", as redefining `throw_boundserror` invalidates a lot of stuff
 @testset "throw_boundserror" begin
     # #268
