@@ -20,7 +20,7 @@ SnoopCompile "snoops" on the Julia compiler, collecting information that may be 
 - trace *inference*, to learn what code is being newly (or freshly) analyzed in an early stage of the compilation pipeline ([Tutorial on `@snoop_inference`](@ref))
 - trace *code generation by LLVM*, a late stage in the compilation pipeline ([Tutorial on `@snoop_llvm`](@ref))
 - reveal methods with excessive numbers of compiler-generated specializations, a.k.a.*profile-guided despecialization* ([Tutorial on PGDS](@ref pgds))
-- integrate with tools like [JET](https://github.com/aviatesk/JET.jl) to further reduce the risk that your lovingly-precompiled code will be invalidated by loading other packages ([Tutorial on JET integration](@ref))
+- integrate with tools like [JET](https://github.com/aviatesk/JET.jl) to further reduce the risk that your lovingly-precompiled code will be invalidated by loading other packages
 
 ## Background information
 
