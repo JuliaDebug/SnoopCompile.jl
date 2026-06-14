@@ -125,28 +125,24 @@ function addchildren!(parent::InferenceTimingNode, handled::Set{CodeInstance}, m
 end
 
 function addchildren!(parent::InferenceTimingNode, cis, backedges, miidx, backtraces)
+    # Precompute the root index for each ci in O(n).
+    # Since cis is children-before-parents, following backedges to higher indices
+    # leads toward roots. We process in reverse so root_of[k] is ready when needed.
+    root_of = collect(eachindex(cis))
+    for i in reverse(eachindex(cis))
+        for k in backedges[i]
+            k > i || continue
+            root_of[i] = root_of[k]
+            break
+        end
+    end
     handled = Set{CodeInstance}()
     for (i, ci) in pairs(cis)
         ci ∈ handled && continue
-        # Follow the backedges to the root
-        j = i
-        be = ci
-        while true
-            found = false
-            for k in backedges[j]
-                k ≤ j && continue   # don't get caught in cycles
-                be = cis[k]
-                if be ∉ handled
-                    j = k
-                    found = true
-                    break
-                end
-            end
-            found || break  # quit when no unhandled backedge found
-        end
+        # Jump to the precomputed root
+        r = root_of[i]
+        be = cis[r]
         be ∈ handled && continue
-        # bt1, bt2 = get(backtraces, Core.Compiler.get_ci_mi(be), (nothing, nothing))
-        # child = InferenceTimingNode(be, make_stacktrace(bt1, bt2), parent)
         child = InferenceTimingNode(be, get(backtraces, be, nothing), parent)
         push!(handled, be)
         addchildren!(child, handled, miidx)
