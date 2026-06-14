@@ -1,0 +1,6 @@
+name = "PkgF"
+uuid = "b2b4d567-0c8b-42d7-ac82-20f7ad6e670c"
+version = "0.1.0"
+
+[deps]
+PkgE = "06e9d836-39c2-490c-9c31-7a346e629b57"

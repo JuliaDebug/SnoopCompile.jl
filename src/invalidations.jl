@@ -553,6 +553,14 @@ of trees if a package creates many methods for a single function.
 
 For more information, see the tutorials in the online documentation.
 """
+function _index_mi_nodes!(d::Dict{MethodInstance,Tuple{Int,InstanceNode}}, nodes::Vector{InstanceNode}, tree_idx::Int)
+    for node in nodes
+        isdummy(node) && continue
+        d[node.mi] = (tree_idx, node)
+        _index_mi_nodes!(d, node.children, tree_idx)
+    end
+end
+
 function invalidation_trees(list::InvalidationLists; consolidate::Bool=true, kwargs...)
     mtrees = invalidation_trees_logmeths(list.logmeths; kwargs...)
     etrees = invalidation_trees_logedges(list.logedges; kwargs...)
@@ -561,16 +569,46 @@ function invalidation_trees(list::InvalidationLists; consolidate::Bool=true, kwa
     else
         trees = mtrees
         mindex = Dict{Union{Method,Binding},Int}(tree.method => i for (i, tree) in enumerate(mtrees))  # map method to index in mtrees
+        # Build MI → (tree_idx, node) index so that verify_methods callees that returned
+        # early (no logedges entry) can be connected back to the mtree that caused them.
+        mi_to_mtree_node = Dict{MethodInstance,Tuple{Int,InstanceNode}}()
+        for (tree_idx, tree) in enumerate(mtrees)
+            _index_mi_nodes!(mi_to_mtree_node, tree.backedges, tree_idx)
+            for (_, node) in tree.mt_backedges
+                _index_mi_nodes!(mi_to_mtree_node, [node], tree_idx)
+            end
+        end
         for etree in etrees
             if etree.reason === :unknown
-                push!(trees, MethodInvalidations(
-                        nothing,
-                        :unknown,
-                        etree.mt_backedges,
-                        etree.backedges,
-                        MethodInstance[],  # mt_cache
-                        MethodInstance[]   # mt_disable
-                    ))
+                # Each root represents a CI that verify_method returned early for (already
+                # invalid at C level). Its MI should appear in some mtree. If so, attach
+                # the logedges callers (root.children) to the matching mtree node so they
+                # are attributed to the correct causing method instead of "unknown nothing".
+                unmatched = InstanceNode[]
+                for root in etree.backedges
+                    hit = get(mi_to_mtree_node, root.mi, nothing)
+                    if hit !== nothing
+                        tree_idx, mtree_node = hit
+                        # root.children are at depth 1 (from the logedges tree where root
+                        # is depth 0). Adjust to mtree_node.depth+1 before appending.
+                        for child in root.children
+                            adjust_depth!(child, mtree_node.depth)
+                        end
+                        append!(mtree_node.children, root.children)
+                    else
+                        push!(unmatched, root)
+                    end
+                end
+                if !isempty(unmatched) || !isempty(etree.mt_backedges)
+                    push!(trees, MethodInvalidations(
+                            nothing,
+                            :unknown,
+                            etree.mt_backedges,
+                            unmatched,
+                            MethodInstance[],  # mt_cache
+                            MethodInstance[]   # mt_disable
+                        ))
+                end
                 continue
             end
             if etree.reason === :deleting
