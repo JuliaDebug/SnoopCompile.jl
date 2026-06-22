@@ -1,18 +1,18 @@
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.13.0-alpha2"
+julia_version = "1.13.0-rc1"
 manifest_format = "2.1"
-project_hash = "a93caa1d8d37f2c27d82c0928268a4534d86f718"
+project_hash = "4ab94083aa499210ef7e545ed5d17470d61c2c97"
 
 [[deps.Blackjack]]
 deps = ["PrecompileTools"]
 path = "/home/runner/work/SnoopCompile.jl/SnoopCompile.jl/docs/build/tutorials/Blackjack"
-uuid = "f2f19ed5-ec21-47e7-8431-4bed6ff97b48"
+uuid = "0607e912-d221-4667-95e1-13b2c340290c"
 version = "0.1.0"
 
 [[deps.BlackjackFacecards]]
 path = "."
-uuid = "a31be507-ad6e-4d5c-8b4a-2dd8bcbe7623"
+uuid = "fed8b6de-3956-4406-9494-0ecfdc47e3a5"
 version = "0.1.0"
 
 [[deps.Dates]]
@@ -22,17 +22,17 @@ version = "1.11.0"
 
 [[deps.PrecompileTools]]
 deps = ["Preferences"]
-git-tree-sha1 = "07a921781cab75691315adc645096ed5e370cb77"
+git-tree-sha1 = "edbeefc7a4889f528644251bdb5fc9ab5348bc2c"
 registries = "General"
 uuid = "aea7be01-6a6a-4083-8856-8a6e6704d82a"
-version = "1.3.3"
+version = "1.3.4"
 
 [[deps.Preferences]]
 deps = ["TOML"]
-git-tree-sha1 = "0f27480397253da18fe2c12a4ba4eb9eb208bf3d"
+git-tree-sha1 = "8b770b60760d4451834fe79dd483e318eee709c4"
 registries = "General"
 uuid = "21216c6a-2e73-6563-6e65-726566657250"
-version = "1.5.0"
+version = "1.5.2"
 
 [[deps.Printf]]
 deps = ["Unicode"]
