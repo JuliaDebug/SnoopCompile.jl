@@ -908,7 +908,11 @@ end
 
     # Loading StaleC should "heal" StaleA.use_stale(::Vector{Any})
     mius = only(methodinstances(StaleA.use_stale))
+    # The healed CodeInstance may not be first in the cache list
     cius = mius.cache
+    while cius.max_world != typemax(UInt) && isdefined(cius, :next) && cius.next !== nothing
+        cius = cius.next
+    end
     @test cius.max_world == typemax(UInt)
     requires_compensation = cius.invoke == C_NULL && cius.specptr == C_NULL && cius.inferred === nothing  # see below
 
