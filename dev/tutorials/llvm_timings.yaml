@@ -3,7 +3,7 @@
     "julia_NamedTuple_416":
         instructions: 24
         basicblocks: 1
-  time_ns: 1248136
+  time_ns: 1326758
   optlevel: 2
   after: 
     "julia_NamedTuple_416":
@@ -14,7 +14,7 @@
     "julia_peakflops_419":
         instructions: 12
         basicblocks: 1
-  time_ns: 950839
+  time_ns: 1089438
   optlevel: 1
   after: 
     "julia_peakflops_419":
@@ -25,7 +25,7 @@
     "julia_#peakflops#90_423":
         instructions: 75
         basicblocks: 7
-  time_ns: 1071946
+  time_ns: 1040685
   optlevel: 1
   after: 
     "julia_#peakflops#90_423":
@@ -36,7 +36,7 @@
     "julia_peakflops_430":
         instructions: 29
         basicblocks: 1
-  time_ns: 1246603
+  time_ns: 1097060
   optlevel: 2
   after: 
     "julia_peakflops_430":
