@@ -178,7 +178,9 @@ function adjust_depth!(node::InstanceNode, Δdepth)
     return node
 end
 
-const BackedgeMT = Pair{Union{DataType,Binding},InstanceNode}  # sig=>root
+# Invalidated call signatures may be `UnionAll`s: an mt-backedge can be registered for a
+# signature with free typevars, e.g. `Tuple{typeof(f), <:Real}` (issue #458).
+const BackedgeMT = Pair{Union{Type,Binding},InstanceNode}  # sig=>root
 
 abstract type AbstractMethodInvalidations end
 
@@ -190,7 +192,7 @@ struct MethodInvalidations <: AbstractMethodInvalidations
     mt_cache::Vector{MethodInstance}
     mt_disable::Vector{MethodInstance}
 end
-methinv_storage() = Pair{Type,InstanceNode}[], InstanceNode[], MethodInstance[], MethodInstance[]
+methinv_storage() = BackedgeMT[], InstanceNode[], MethodInstance[], MethodInstance[]
 function MethodInvalidations(method, reason::Symbol)
     MethodInvalidations(method, reason, methinv_storage()...)
 end
@@ -411,7 +413,7 @@ function invalidation_trees_logmeths(list; exclude_corecompiler::Bool=true)
     return methodinvs
 end
 
-const EdgeNodeType = Union{DataType, Binding, MethodInstance, CodeInstance}
+const EdgeNodeType = Union{Type, Binding, MethodInstance, CodeInstance}
 
 struct MultiMethodInvalidations <: AbstractMethodInvalidations
     methods::Union{Binding,Vector{Method}}

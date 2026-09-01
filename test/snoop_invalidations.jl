@@ -26,6 +26,10 @@ struct MyInt <: Integer
     x::Int
 end
 
+# Target of a manually-registered `UnionAll` method-table backedge
+uacallee(::Int) = 1
+uacaller(x) = uacallee(x)
+
 end
 
 # For recursive filtermod
@@ -230,6 +234,25 @@ end
     @test length(filtermod(Inner, trees)) == 1
     @test isempty(filtermod(Outer, trees))
     @test length(filtermod(Outer, trees; recursive=true)) == 1
+end
+
+@testset "UnionAll mt_backedge signatures" begin
+    # issue #458: packages (e.g. Enzyme) register method-table backedges for signatures
+    # with free typevars, so the invalidated signature can be a `UnionAll`.
+    SnooprTests.uacaller(1)
+    m = only(methods(SnooprTests.uacaller))
+    ci = only(SnoopCompile.specializations(m)).cache
+    sig = Tuple{typeof(SnooprTests.uacallee), <:Real}
+    @test isa(sig, UnionAll)
+    ccall(:jl_method_table_add_backedge, Cvoid, (Any, Any), sig, ci)
+
+    invs = @snoop_invalidations (@eval SnooprTests uacallee(::Float64) = 2)
+    trees = invalidation_trees(invs)
+    tree = only(trees)
+    invsig, root = only(tree.mt_backedges)
+    @test invsig === sig
+    @test root.mi.def === m
+    @test occursin("mt_backedges: 1: signature Tuple{typeof(", sprint(show, tree))
 end
 
 @testset "Edge invalidations" begin
