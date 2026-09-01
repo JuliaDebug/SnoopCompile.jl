@@ -616,14 +616,14 @@ function invalidation_trees(list::InvalidationLists; consolidate::Bool=true, kwa
             if etree.reason === :deleting
                 @assert isempty(etree.backedges)  # should not have any backedges
                 # Determine whether any of the deleted methods cover this
-                covered = false
                 for (edge, node) in etree.mt_backedges
+                    covered = false
                     for mtree in mtrees
                         mtree.reason === :deleting || continue
                         isnothing(mtree.method) && continue
                         mtree.method.sig <: edge || continue
                         # This edge is covered by the deleted method
-                        join_invalidations!(mtree.mt_backedges, edge => node)
+                        join_invalidations!(mtree.mt_backedges, BackedgeMT[edge => node])
                         covered = true
                     end
                     covered && continue
@@ -785,8 +785,9 @@ function join_invalidations!(list::AbstractVector{<:Pair}, items::AbstractVector
             key2 == key || continue
             mi2 = root2.mi
             if mi2 == mi
-                # Find the first branch that isn't shared
-                join_branches!(node, root2)
+                # Merge into the node already in `list`, which is the one that is kept
+                # (issue #364)
+                join_branches!(root2, node)
                 found = true
                 break
             end
