@@ -315,6 +315,27 @@ end
     Pkg.activate(cproj)
 end
 
+@testset "Merging mt_backedges" begin
+    # issue #364: when two invalidation trees share a signature and root
+    # MethodInstance, the merged tree must retain the callers of both.
+    c = Any[1]
+    SnooprTests.callapplyf(c)
+    SnooprTests.mccc1(c, 1)
+    root = methodinstance(SnooprTests.applyf, (Vector{Any},))
+    childa = methodinstance(SnooprTests.callapplyf, (Vector{Any},))
+    childb = methodinstance(SnooprTests.mccc1, (Vector{Any}, Int))
+    sig = Tuple{typeof(SnooprTests.f), Any}
+    function mt_backedge(childmi)
+        rootnode = SnoopCompile.InstanceNode(root, 0)
+        SnoopCompile.InstanceNode(childmi, rootnode)
+        return SnoopCompile.BackedgeMT[sig => rootnode]
+    end
+    list = mt_backedge(childa)
+    SnoopCompile.join_invalidations!(list, mt_backedge(childb))
+    _, merged = only(list)
+    @test Set(child.mi for child in merged.children) == Set((childa, childb))
+end
+
 @testset "Unknown-tree attribution via logmeths cross-reference" begin
     # When a package is loaded and its precompiled CIs are already C-level invalid
     # (max_world=0), verify_method returns early without emitting an
