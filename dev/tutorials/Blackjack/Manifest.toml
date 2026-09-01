@@ -2,11 +2,11 @@
 
 julia_version = "1.13.0-rc3"
 manifest_format = "2.1"
-project_hash = "d1b7ba625af8d02b6a98ec0b5640c9a21a1eebbf"
+project_hash = "4af1f18f40aa8213bdb875ce892821a593dc8f61"
 
 [[deps.Blackjack]]
 path = "."
-uuid = "d9af2ba9-6f0d-4337-abce-ba03f6d41b5b"
+uuid = "361f5f00-4e4e-4852-a9eb-44e00d33f68a"
 version = "0.1.0"
 
 [[deps.Dates]]
