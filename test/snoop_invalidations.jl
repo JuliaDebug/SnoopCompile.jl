@@ -303,6 +303,14 @@ end
     node = only(root.children)
     @test node.mi.def == only(methods(PkgD.calls_mytype))
 
+    # Bindings have no file/line, and are reported by their qualified name
+    io = IOBuffer()
+    SnoopCompile.report_invalidations(io; invalidations, n_rows=0)
+    str = String(take!(io))
+    @test occursin("PkgC.someconst", str)
+    @test occursin("PkgC.MyType", str)
+    @test occursin("nbits", str)
+
     cd(olddir)
     Pkg.activate(cproj)
 end
