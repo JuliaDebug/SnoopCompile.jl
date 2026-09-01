@@ -1,10 +1,10 @@
 name = "BlackjackFacecards"
-uuid = "beb14567-3e7d-4489-bf9c-4a1366e0245e"
+uuid = "e90f1322-1c49-40f9-acf6-3d1be9b7af60"
 version = "0.1.0"
 authors = ["runner "]
 
 [deps]
-Blackjack = "543165b4-cfc3-4d1a-836d-c66317f58253"
+Blackjack = "ad023021-75b3-444c-a683-9dfc9a0b5070"
 
 [sources]
 Blackjack = {path = "/home/runner/work/SnoopCompile.jl/SnoopCompile.jl/docs/build/tutorials/Blackjack"}
