@@ -108,33 +108,113 @@ function timingtree(cis, _backtraces::Vector{Any})
         bt = Base._reformat_bt(trace[1], trace[2])
         backtraces[ci] = bt
     end
-    addchildren!(root, cis, backedges, miidx, backtraces)
+    # Only a fresh entrance to inference, which is a frame carrying a backtrace, belongs
+    # directly below ROOT. A frame with neither a caller nor a backtrace is missing an edge:
+    # when inference resolves a recursive cycle, the call that closes the cycle is recorded
+    # only in the callee's MethodInstance backedges (issue #456).
+    supplement = Dict{Int,Int}()          # frame => the caller recovered for it
+    for i in eachindex(cis)
+        (isempty(backedges[i]) && !haskey(backtraces, cis[i])) || continue
+        mi = methodinstance(cis[i])
+        isdefined(mi, :backedges) || continue
+        for b in mi.backedges
+            k = callerindex(b, miidx)
+            (k === nothing || k == i) && continue
+            supplement[i] = k
+            break
+        end
+    end
+    addchildren!(root, cis, backedges, supplement, miidx, backtraces)
     return root
 end
 
-function addchildren!(parent::InferenceTimingNode, handled::Set{CodeInstance}, miidx)
+"""
+    i = callerindex(backedge, miidx)
+
+Return the index of the frame `backedge` refers to, or `nothing` if that frame was not
+collected or `backedge` does not name one (an `invoke` signature, for instance).
+"""
+function callerindex(@nospecialize(backedge), miidx)
+    mi = backedge isa CodeInstance ? methodinstance(backedge) :
+         backedge isa MethodInstance ? backedge : return nothing
+    return get(miidx, mi, nothing)
+end
+
+"""
+    j = enclosingframe(backedges, supplement, i)
+
+Return the index of the caller that encloses frame `i`, or 0 if the frame starts its own
+inference tree. `backedges[i]` lists the frames that call frame `i`.
+"""
+function enclosingframe(backedges, supplement, i::Int)
+    # Frames are collected children-before-parents, so a caller collected later is the one
+    # that encloses this frame.
+    for k in backedges[i]
+        k > i && return k
+    end
+    return get(supplement, i, 0)
+end
+
+"""
+    root_of = rootframes(backedges, supplement)
+
+Return, for each frame, the index of the frame at the top of its chain of callers.
+"""
+function rootframes(backedges, supplement)
+    root_of = zeros(Int, length(backedges))   # 0 = not yet resolved, -1 = on the path being walked
+    path = Int[]
+    for i in eachindex(backedges)
+        root_of[i] == 0 || continue
+        empty!(path)
+        j, r = i, 0
+        while true
+            push!(path, j)
+            root_of[j] = -1
+            k = enclosingframe(backedges, supplement, j)
+            if k == 0                   # `j` tops its chain
+                r = j
+                break
+            elseif root_of[k] != 0      # already resolved, or `k` closes a cycle back onto the path
+                r = root_of[k] > 0 ? root_of[k] : k
+                break
+            end
+            j = k
+        end
+        for k in path
+            root_of[k] = r
+        end
+    end
+    return root_of
+end
+
+function addchildren!(parent::InferenceTimingNode, handled::Set{CodeInstance}, cis, recovered, miidx)
     for ci in parent.ci.edges
         ci isa CodeInstance || continue
         haskey(miidx, methodinstance(ci)) || continue
         ci ∈ handled && continue
         child = InferenceTimingNode(ci, nothing, parent)
         push!(handled, ci)
-        addchildren!(child, handled, miidx)
+        addchildren!(child, handled, cis, recovered, miidx)
+    end
+    # Callees reached only through the MethodInstance backedges
+    i = get(miidx, methodinstance(parent.ci), nothing)
+    if i !== nothing
+        for j in get(recovered, i, ())
+            ci = cis[j]
+            ci ∈ handled && continue
+            child = InferenceTimingNode(ci, nothing, parent)
+            push!(handled, ci)
+            addchildren!(child, handled, cis, recovered, miidx)
+        end
     end
     return parent
 end
 
-function addchildren!(parent::InferenceTimingNode, cis, backedges, miidx, backtraces)
-    # Precompute the root index for each ci in O(n).
-    # Since cis is children-before-parents, following backedges to higher indices
-    # leads toward roots. We process in reverse so root_of[k] is ready when needed.
-    root_of = collect(eachindex(cis))
-    for i in reverse(eachindex(cis))
-        for k in backedges[i]
-            k > i || continue
-            root_of[i] = root_of[k]
-            break
-        end
+function addchildren!(parent::InferenceTimingNode, cis, backedges, supplement, miidx, backtraces)
+    root_of = rootframes(backedges, supplement)
+    recovered = Dict{Int,Vector{Int}}()       # caller => the frames recovered for it
+    for (i, k) in supplement
+        push!(get!(Vector{Int}, recovered, k), i)
     end
     handled = Set{CodeInstance}()
     for (i, ci) in pairs(cis)
@@ -145,7 +225,7 @@ function addchildren!(parent::InferenceTimingNode, cis, backedges, miidx, backtr
         be ∈ handled && continue
         child = InferenceTimingNode(be, get(backtraces, be, nothing), parent)
         push!(handled, be)
-        addchildren!(child, handled, miidx)
+        addchildren!(child, handled, cis, recovered, miidx)
     end
     return parent
 end
