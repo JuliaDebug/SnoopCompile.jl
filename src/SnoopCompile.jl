@@ -50,7 +50,9 @@ using Base: specializations
 const anonrex = r"#{1,2}\d+#{1,2}\d+"         # detect anonymous functions
 const kwrex = r"^#kw##(.*)$|^#([^#]*)##kw$"   # detect keyword-supplying functions (prior to Core.kwcall)
 const kwbodyrex = r"^##(\w[^#]*)#\d+"         # detect keyword body methods
-const genrex = r"^##s\d+#\d+$"                # detect generators for @generated functions
+# Detect generators for @generated functions from the typename of `generator.gen`:
+# "##s123#456" on older Julia versions (through 1.12.0), "##123#456" on newer ones
+const genrex = r"^##s?\d+#\d+$"
 const innerrex = r"^#[^#]+#\d+"               # detect inner functions
 
 include("utils.jl")

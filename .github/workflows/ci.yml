@@ -21,6 +21,7 @@ jobs:
       matrix:
         version:
           - 'min'
+          - '1'
           - 'pre'
           - 'nightly'
         os:
