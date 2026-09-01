@@ -889,6 +889,26 @@ end
     @test :printfinal ∈ names
 end
 
+# Mutual recursion through `Vararg` methods: the call that closes the cycle is absent from
+# the caller's edges, so the callee's parent has to be recovered elsewhere (issue #456).
+function cycletop(args...)
+    isempty(args) && return nothing
+    return cyclesub(args...)
+end
+function cyclesub(args...)
+    return cycletop(args[1:end-1]...)
+end
+@testset "cycles - vararg" begin
+    tinf = @snoop_inference cycletop(1, 2.0)
+    names = [Method(frame).name for frame in flatten(tinf)]
+    @test :cycletop ∈ names
+    @test :cyclesub ∈ names
+    # Every direct child of ROOT is an entrance to inference and therefore has a backtrace
+    @test all(child -> child.bt !== nothing, tinf.children)
+    itrigs = inference_triggers(tinf)
+    @test any(itrig -> MethodInstance(itrig.node).def.name === :cycletop, itrigs)
+end
+
 @testset "Stale and precompile_blockers" begin
     cproj = Base.active_project()
     cd(joinpath("testmodules", "Stale")) do
