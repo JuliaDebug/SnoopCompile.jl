@@ -4,6 +4,18 @@ using SnoopCompile
 using SnoopCompile: countchildren
 import PrettyTables
 
+# The invalidated entity is a `Method`, or (for invalidations triggered by rebinding a
+# global) a `Core.Binding` with no source location. `nothing` marks an invalidator that
+# could not be identified.
+invname(inv) = _name(inv.method)
+_name(m::Method) = string(m.name)
+_name(b::Core.Binding) = string(b.globalref)   # qualified: bindings have no file:line to disambiguate them
+_name(::Nothing) = "unknown"
+
+invfile(inv, process_filename) = _file(inv.method, process_filename)
+_file(m::Method, process_filename) = "$(process_filename(string(m.file))):$(m.line)"
+_file(::Union{Core.Binding,Nothing}, process_filename) = "unknown"
+
 function SnoopCompile.report_invalidations(io::IO = stdout;
         invalidations,
         n_rows::Int = 10,
@@ -31,12 +43,8 @@ function SnoopCompile.report_invalidations(io::IO = stdout;
     n_invalidations_percent = map(invs_per_method) do inv
         Float16(100 * inv / sum_invs)
     end
-    meth_name = map(trees) do inv
-        isnothing(inv.method) ? "unknown" : "$(inv.method.name)"
-    end
-    fileinfo = map(trees) do inv
-        isnothing(inv.method) ? "unknown" : "$(process_filename(string(inv.method.file))):$(inv.method.line)"
-    end
+    meth_name = map(invname, trees)
+    fileinfo = map(inv -> invfile(inv, process_filename), trees)
 
     table_data = hcat(
         fileinfo,
