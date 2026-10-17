@@ -55,7 +55,7 @@ julia> tinf = @snoop_inference FlattenDemo.packintype(1);
 julia> using SnoopCompile
 
 julia> tinf
-InferenceTimingNode: 0.000007/0.003824 on Base.Compiler.Timings.ROOT() with 1 direct children
+InferenceTimingNode: 0.000007/0.005233 on Base.Compiler.Timings.ROOT() with 1 direct children
 ```
 
 !!! tip
@@ -90,13 +90,13 @@ We can do that with the [AbstractTrees](https://github.com/JuliaCollections/Abst
 julia> using AbstractTrees
 
 julia> print_tree(tinf, maxdepth=100)
-InferenceTimingNode: 0.000007/0.003824 on Base.Compiler.Timings.ROOT() with 1 direct children
-└─ InferenceTimingNode: 0.002838/0.003816 on Main.var"Main".FlattenDemo.packintype(::Int64) with 2 direct children
-   ├─ InferenceTimingNode: 0.000137/0.000141 on Main.var"Main".FlattenDemo.MyType{Int64}(::Int64) with 0 direct children
-   └─ InferenceTimingNode: 0.000170/0.000559 on Main.var"Main".FlattenDemo.dostuff(::Main.var"Main".FlattenDemo.MyType{Int64}) with 2 direct children
-      ├─ InferenceTimingNode: 0.000124/0.000180 on Main.var"Main".FlattenDemo.extract(::Main.var"Main".FlattenDemo.MyType{Int64}) with 1 direct children
-      │  └─ InferenceTimingNode: 0.000042/0.000043 on getproperty(::Main.var"Main".FlattenDemo.MyType{Int64}, ::Symbol) with 0 direct children
-      └─ InferenceTimingNode: 0.000092/0.000093 on Main.var"Main".FlattenDemo.domath(::Int64) with 0 direct children
+InferenceTimingNode: 0.000007/0.005233 on Base.Compiler.Timings.ROOT() with 1 direct children
+└─ InferenceTimingNode: 0.004478/0.005226 on Main.var"Main".FlattenDemo.packintype(::Int64) with 2 direct children
+   ├─ InferenceTimingNode: 0.000205/0.000205 on Main.var"Main".FlattenDemo.MyType{Int64}(::Int64) with 0 direct children
+   └─ InferenceTimingNode: 0.000200/0.000544 on Main.var"Main".FlattenDemo.dostuff(::Main.var"Main".FlattenDemo.MyType{Int64}) with 2 direct children
+      ├─ InferenceTimingNode: 0.000183/0.000228 on Main.var"Main".FlattenDemo.extract(::Main.var"Main".FlattenDemo.MyType{Int64}) with 1 direct children
+      │  └─ InferenceTimingNode: 0.000045/0.000045 on getproperty(::Main.var"Main".FlattenDemo.MyType{Int64}, ::Symbol) with 0 direct children
+      └─ InferenceTimingNode: 0.000115/0.000115 on Main.var"Main".FlattenDemo.domath(::Int64) with 0 direct children
 ```
 
 This tree structure reveals the caller-callee relationships, showing the specific types that were used for each `MethodInstance`.
@@ -122,7 +122,7 @@ The second number is the *inclusive* time, which is the exclusive time plus the 
 Therefore, the inclusive time is always at least as large as the exclusive time.
 
 The `ROOT` node is a bit different: it is a placeholder for the top of the tree, not a function that was inferred, so its exclusive time is negligible.
-Its inclusive time summarizes all the compilation recorded by `@snoop_inference`.
+Its inclusive time is the total for all the compilation recorded by `@snoop_inference`.
 
 By default, both numbers also include the time LLVM spent generating native code for the `MethodInstance`;
 pass `include_llvm=false` to [`exclusive`](@ref) and [`inclusive`](@ref) to obtain the time for type-inference alone.
@@ -154,14 +154,13 @@ Users are encouraged to read the ProfileView documentation to understand how to 
 - left-clicking on a box causes the full `MethodInstance` to be printed in your REPL session
 - right-clicking on a box opens the corresponding method in your editor
 - ctrl-click can be used to zoom in
-- empty horizontal space above a box corresponds to time not accounted for by that box's callees
+- empty horizontal space above a box corresponds to that box's exclusive time, the time not spent on its callees
 - any boxes colored red (there are none in this particular example, but you'll see some later) correspond to *naively non-precompilable* `MethodInstance`s, in which the method is owned by one module but the types are from another unrelated module. Such `MethodInstance`s are omitted from the precompile cache file unless they've been "marked" by `PrecompileTools.@compile_workload` or an explicit `precompile` directive. See [`SnoopCompile.isprecompilable`](@ref) for further explanation and some examples.
-- any boxes colored orange-yellow (there is one in this demo) correspond to methods inferred for specific constants (constant propagation).
 
 You can explore this flamegraph and compare it to the output from `print_tree`.
 
 !!! note
-    Orange-yellow boxes that appear at the base of a flame are worth special attention, and may represent something that you thought you had precompiled. For example, suppose your workload "exercises" `myfun(args...; warn=true)`, so you might think you have `myfun` covered for the corresponding argument *types*. But constant-propagation (as indicated by the orange-yellow coloration) results in (re)compilation for specific *values*: if Julia has decided that `myfun` merits constant-propagation, a call `myfun(args...; warn=false)` might need to be compiled separately.
+    Julia 1.12 and later do not record inference for specific constant values ([constant propagation](https://en.wikipedia.org/wiki/Constant_folding)) as separate frames, so it cannot be identified in the tree or the flamegraph. It can still affect TTFX, and may cause compilation of something that you thought you had precompiled. For example, suppose your workload "exercises" `myfun(args...; warn=true)`, so you might think you have `myfun` covered for the corresponding argument *types*. But constant-propagation results in (re)compilation for specific *values*: if Julia has decided that `myfun` merits constant-propagation, a call `myfun(args...; warn=false)` might need to be compiled separately.
 
     When you want to prevent constant-propagation from hurting your TTFX, you have two options:
     - precompile for all relevant argument *values* as well as types. The most common argument types to trigger Julia's constprop heuristics are numbers (`Bool`/`Int`/etc) and `Symbol`.

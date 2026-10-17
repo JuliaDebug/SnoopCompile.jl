@@ -38,9 +38,8 @@ constant-propagated values). Each reports the
 corresponds to the time spent inferring this frame in and of itself, whereas the
 inclusive time includes the time needed to infer all the callees of this frame.
 
-The top-level node in this profile tree is `ROOT`. Uniquely, its exclusive time
-corresponds to the time spent _not_ in julia's type inference (codegen,
-llvm_opt, runtime, etc).
+The top-level node in this profile tree is `ROOT`, a placeholder that was not
+itself inferred. Its inclusive time is the total for all frames in the tree.
 
 Working with `tinf` effectively requires loading `SnoopCompile`.
 
@@ -238,15 +237,16 @@ methodinstance(ci::CodeInstance) = Core.Compiler.get_ci_mi(ci)
 ## API functions
 
 """
-    inclusive(ci::InferenceTimingNode; include_llvm::Bool=true)
+    inclusive(node::InferenceTimingNode; include_llvm::Bool=true)
 
-Return the time spent inferring `ci` and its callees.
+Return the time spent inferring `node` and its callees: the sum of [`exclusive`](@ref)
+over `node` and all of its descendants in the tree.
 If `include_llvm` is true, the LLVM compilation time is added as well.
 """
-inclusive(ci::CodeInstance; include_llvm::Bool=true) = Float64(reinterpret(Float16, ci.time_infer_total)) +
-    include_llvm * Float64(reinterpret(Float16, ci.time_compile))
 function inclusive(node::InferenceTimingNode; kwargs...)
-    t = inclusive(node.ci; kwargs...)
+    # Not `node.ci.time_infer_total`: the compiler's nesting of inference frames differs
+    # from the caller/callee tree in `node.children`.
+    t = exclusive(node; kwargs...)
     for child in node.children
         t += inclusive(child; kwargs...)
     end
@@ -254,9 +254,9 @@ function inclusive(node::InferenceTimingNode; kwargs...)
 end
 
 """
-    exclusive(ci::InferenceTimingNode; include_llvm::Bool=true)
+    exclusive(node::InferenceTimingNode; include_llvm::Bool=true)
 
-Return the time spent inferring `ci`, not including the time needed for any of its callees.
+Return the time spent inferring `node`, not including the time needed for any of its callees.
 If `include_llvm` is true, the LLVM compilation time is added.
 """
 exclusive(ci::CodeInstance; include_llvm::Bool=true) = Float64(reinterpret(Float16, ci.time_infer_self)) +

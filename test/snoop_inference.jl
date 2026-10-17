@@ -44,6 +44,17 @@ hasconstpropnumber(f::SnoopCompile.InferenceTiming) = false # FIXME
     @test SnoopCompile.isROOT(Method(tinf))
     child = tinf.children[1]
     @test inclusive(child) > 0
+    # inclusive time is additive over the tree, and `flatten` uses the same times
+    for include_llvm in (true, false)
+        @test all(PreOrderDFS(tinf)) do node
+            inclusive(node; include_llvm) ≈ exclusive(node; include_llvm) + sum(c -> inclusive(c; include_llvm), node.children; init=0.0)
+        end
+    end
+    @test inclusive(tinf) ≈ sum(exclusive, PreOrderDFS(tinf))
+    tmin = inclusive(child.children[1])
+    iframes = flatten(tinf; sortby=inclusive, tmin)
+    @test all(f -> inclusive(f) >= tmin, iframes)
+    @test Set(MethodInstance.(iframes)) == Set(MethodInstance(node) for node in PreOrderDFS(tinf) if inclusive(node) >= tmin)
     @test SnoopCompile.getroot(child.children[1]) == child
     @test SnoopCompile.getroot(child.children[1].children[1]) == child
     @test isempty(staleinstances(tinf))

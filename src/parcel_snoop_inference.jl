@@ -8,15 +8,17 @@ using Profile
 
 # Wrapper for which we can customize `show`
 struct InferenceTiming
-    ci::CodeInstance
+    node::InferenceTimingNode
 end
-InferenceTiming(node::InferenceTimingNode) = InferenceTiming(node.ci)
 InferenceTiming(node::InferenceTiming) = node
 
-Base.convert(::Type{InferenceTiming}, node::InferenceTimingNode) = InferenceTiming(node.ci)
+Base.convert(::Type{InferenceTiming}, node::InferenceTimingNode) = InferenceTiming(node)
 
-SnoopCompileCore.inclusive(t::InferenceTiming) = inclusive(t.ci)
-SnoopCompileCore.exclusive(t::InferenceTiming) = exclusive(t.ci)
+SnoopCompileCore.inclusive(t::InferenceTiming; kwargs...) = inclusive(t.node; kwargs...)
+SnoopCompileCore.exclusive(t::InferenceTiming; kwargs...) = exclusive(t.node; kwargs...)
+
+codeinstance(t::InferenceTiming) = t.node.ci
+codeinstance(node::InferenceTimingNode) = node.ci
 
 const InferenceNode = Union{InferenceTiming,InferenceTimingNode}
 
@@ -26,7 +28,7 @@ const rextest = r"Test\.jl$"       # for detecting calls from a @testset
 
 # While it might be nice to put some of these in SnoopCompileCore,
 # SnoopCompileCore guarantees that it doesn't extend any Base function.
-Core.MethodInstance(t::InferenceNode) = Core.Compiler.get_ci_mi(t.ci)
+Core.MethodInstance(t::InferenceNode) = Core.Compiler.get_ci_mi(codeinstance(t))
 
 Core.Method(x::InferenceNode) = MethodInstance(x).def::Method   # deliberately throw an error if this is a module
 
@@ -77,41 +79,41 @@ We'll use [`SnoopCompile.flatten_demo`](@ref), which runs `@snoop_inference` on 
 
 ```jldoctest flatten; setup=:(using SnoopCompile), filter=r"([0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?/[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?|WARNING: replacing module FlattenDemo\\.\\n)"
 julia> tinf = SnoopCompile.flatten_demo()
-InferenceTimingNode: 0.000007/0.003162 on Base.Compiler.Timings.ROOT() with 1 direct children
+InferenceTimingNode: 0.000007/0.002546 on Base.Compiler.Timings.ROOT() with 1 direct children
 
 julia> using AbstractTrees; print_tree(tinf)
-InferenceTimingNode: 0.000007/0.003162 on Base.Compiler.Timings.ROOT() with 1 direct children
-└─ InferenceTimingNode: 0.002186/0.003155 on SnoopCompile.FlattenDemo.packintype(::$Int) with 2 direct children
-   ├─ InferenceTimingNode: 0.000119/0.000122 on SnoopCompile.FlattenDemo.MyType{$Int}(::$Int) with 0 direct children
-   └─ InferenceTimingNode: 0.000171/0.000561 on SnoopCompile.FlattenDemo.dostuff(::SnoopCompile.FlattenDemo.MyType{$Int}) with 2 direct children
-      ├─ InferenceTimingNode: 0.000136/0.000181 on SnoopCompile.FlattenDemo.extract(::SnoopCompile.FlattenDemo.MyType{$Int}) with 1 direct children
-      │  └─ InferenceTimingNode: 0.000034/0.000035 on getproperty(::SnoopCompile.FlattenDemo.MyType{$Int}, ::Symbol) with 0 direct children
-      └─ InferenceTimingNode: 0.000086/0.000087 on SnoopCompile.FlattenDemo.domath(::$Int) with 0 direct children
+InferenceTimingNode: 0.000007/0.002546 on Base.Compiler.Timings.ROOT() with 1 direct children
+└─ InferenceTimingNode: 0.002046/0.002539 on SnoopCompile.FlattenDemo.packintype(::$Int) with 2 direct children
+   ├─ InferenceTimingNode: 0.000111/0.000111 on SnoopCompile.FlattenDemo.MyType{$Int}(::$Int) with 0 direct children
+   └─ InferenceTimingNode: 0.000163/0.000383 on SnoopCompile.FlattenDemo.dostuff(::SnoopCompile.FlattenDemo.MyType{$Int}) with 2 direct children
+      ├─ InferenceTimingNode: 0.000107/0.000139 on SnoopCompile.FlattenDemo.extract(::SnoopCompile.FlattenDemo.MyType{$Int}) with 1 direct children
+      │  └─ InferenceTimingNode: 0.000032/0.000032 on getproperty(::SnoopCompile.FlattenDemo.MyType{$Int}, ::Symbol) with 0 direct children
+      └─ InferenceTimingNode: 0.000081/0.000081 on SnoopCompile.FlattenDemo.domath(::$Int) with 0 direct children
 ```
 
 Then:
 ```jldoctest flatten; setup=:(using SnoopCompile), filter=[r"[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?/[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?", r"WARNING: replacing module FlattenDemo.*"]
 julia> flatten(tinf; sortby=nothing)
 7-element Vector{InferenceTiming}:
- InferenceTiming: 0.000007/0.000007 on Base.Compiler.Timings.ROOT()
- InferenceTiming: 0.002186/0.002472 on SnoopCompile.FlattenDemo.packintype(::$Int)
- InferenceTiming: 0.000119/0.000122 on SnoopCompile.FlattenDemo.MyType{$Int}(::$Int)
- InferenceTiming: 0.000171/0.000293 on SnoopCompile.FlattenDemo.dostuff(::SnoopCompile.FlattenDemo.MyType{$Int})
- InferenceTiming: 0.000136/0.000146 on SnoopCompile.FlattenDemo.extract(::SnoopCompile.FlattenDemo.MyType{$Int})
- InferenceTiming: 0.000034/0.000035 on getproperty(::SnoopCompile.FlattenDemo.MyType{$Int}, ::Symbol)
- InferenceTiming: 0.000086/0.000087 on SnoopCompile.FlattenDemo.domath(::$Int)
+ InferenceTiming: 0.000007/0.002546 on Base.Compiler.Timings.ROOT()
+ InferenceTiming: 0.002046/0.002539 on SnoopCompile.FlattenDemo.packintype(::$Int)
+ InferenceTiming: 0.000111/0.000111 on SnoopCompile.FlattenDemo.MyType{$Int}(::$Int)
+ InferenceTiming: 0.000163/0.000383 on SnoopCompile.FlattenDemo.dostuff(::SnoopCompile.FlattenDemo.MyType{$Int})
+ InferenceTiming: 0.000107/0.000139 on SnoopCompile.FlattenDemo.extract(::SnoopCompile.FlattenDemo.MyType{$Int})
+ InferenceTiming: 0.000032/0.000032 on getproperty(::SnoopCompile.FlattenDemo.MyType{$Int}, ::Symbol)
+ InferenceTiming: 0.000081/0.000081 on SnoopCompile.FlattenDemo.domath(::$Int)
 ```
 
 ```
 julia> flatten(tinf; tmin=2e-4)                        # sorts by exclusive time (the time before the '/')
 1-element Vector{InferenceTiming}:
- InferenceTiming: 0.002186/0.002472 on SnoopCompile.FlattenDemo.packintype(::$Int)
+ InferenceTiming: 0.002046/0.002539 on SnoopCompile.FlattenDemo.packintype(::$Int)
 
 julia> flatten(tinf; sortby=inclusive, tmin=2e-4)      # sorts by inclusive time (the time after the '/')
 3-element Vector{InferenceTiming}:
- InferenceTiming: 0.000007/0.000007 on Base.Compiler.Timings.ROOT()
- InferenceTiming: 0.000171/0.000293 on SnoopCompile.FlattenDemo.dostuff(::SnoopCompile.FlattenDemo.MyType{$Int})
- InferenceTiming: 0.002186/0.002472 on SnoopCompile.FlattenDemo.packintype(::$Int)
+ InferenceTiming: 0.000163/0.000383 on SnoopCompile.FlattenDemo.dostuff(::SnoopCompile.FlattenDemo.MyType{$Int})
+ InferenceTiming: 0.002046/0.002539 on SnoopCompile.FlattenDemo.packintype(::$Int)
+ InferenceTiming: 0.000007/0.002546 on Base.Compiler.Timings.ROOT()
 ```
 
 As you can see, `sortby` affects not just the order but also the selection of frames; with exclusive times, `dostuff` did
@@ -152,17 +154,17 @@ We'll use [`SnoopCompile.flatten_demo`](@ref), which runs `@snoop_inference` on 
 
 ```jldoctest accum1; setup=:(using SnoopCompile), filter=[r"([0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?/[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?|WARNING: replacing module FlattenDemo\\.\\n)", r"\\n \\(.*"]
 julia> tinf = SnoopCompile.flatten_demo()
-InferenceTimingNode: 0.000007/0.003162 on Base.Compiler.Timings.ROOT() with 1 direct children
+InferenceTimingNode: 0.000007/0.002546 on Base.Compiler.Timings.ROOT() with 1 direct children
 
 julia> accumulate_by_source(flatten(tinf))
 7-element Vector{Tuple{Float64, Union{Method, Core.MethodInstance}}}:
  (6.973743438720703e-6, ROOT() @ Base.Compiler.Timings ~/.julia/juliaup/julia-1.12.7+0.x64.linux.gnu/share/julia/Compiler/src/typeinfer.jl:66)
- (3.439188003540039e-5, getproperty(x, f::Symbol) @ Base Base_compiler.jl:54)
- (8.64267349243164e-5, domath(x) @ SnoopCompile.FlattenDemo ~/.julia/dev/SnoopCompile/src/inference_demos.jl:41)
- (0.00011855363845825195, (var"#ctor-self#"::Type{SnoopCompile.FlattenDemo.MyType{T}} where T)(x) @ SnoopCompile.FlattenDemo ~/.julia/dev/SnoopCompile/src/inference_demos.jl:35)
- (0.00013554096221923828, extract(y::SnoopCompile.FlattenDemo.MyType) @ SnoopCompile.FlattenDemo ~/.julia/dev/SnoopCompile/src/inference_demos.jl:36)
- (0.0001709461212158203, dostuff(y) @ SnoopCompile.FlattenDemo ~/.julia/dev/SnoopCompile/src/inference_demos.jl:45)
- (0.0021855831146240234, packintype(x) @ SnoopCompile.FlattenDemo ~/.julia/dev/SnoopCompile/src/inference_demos.jl:37)
+ (3.2067298889160156e-5, getproperty(x, f::Symbol) @ Base Base_compiler.jl:54)
+ (8.118152618408203e-5, domath(x) @ SnoopCompile.FlattenDemo ~/.julia/dev/SnoopCompile/src/inference_demos.jl:41)
+ (0.00010675191879272461, extract(y::SnoopCompile.FlattenDemo.MyType) @ SnoopCompile.FlattenDemo ~/.julia/dev/SnoopCompile/src/inference_demos.jl:36)
+ (0.000110626220703125, (var"#ctor-self#"::Type{SnoopCompile.FlattenDemo.MyType{T}} where T)(x) @ SnoopCompile.FlattenDemo ~/.julia/dev/SnoopCompile/src/inference_demos.jl:35)
+ (0.00016295909881591797, dostuff(y) @ SnoopCompile.FlattenDemo ~/.julia/dev/SnoopCompile/src/inference_demos.jl:45)
+ (0.0020456314086914062, packintype(x) @ SnoopCompile.FlattenDemo ~/.julia/dev/SnoopCompile/src/inference_demos.jl:37)
 ```
 
 In this demo each `Method` has a single `MethodInstance`, so each accumulated time equals the corresponding exclusive time from [`flatten`](@ref).
@@ -1825,8 +1827,8 @@ julia> ProfileView.view(fg);  # Display the FlameGraph in a package that support
 You should be able to reconcile the resulting flamegraph to `print_tree(tinf)`
 (see [`flatten`](@ref)).
 
-Empty horizontal space above a frame corresponds to time not accounted for by
-that frame's callees. The total width of the flamegraph is set from the `ROOT`
+Empty horizontal space above a frame corresponds to that frame's exclusive time,
+the time not spent on its callees. The total width of the flamegraph is set from the `ROOT`
 node.
 """
 function FlameGraphs.flamegraph(tinf::InferenceTimingNode; include_llvm::Bool=true, tmin = 0.0, excluded_modules=Set([Main::Module]), mode=nothing)
