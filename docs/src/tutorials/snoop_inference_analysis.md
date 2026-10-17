@@ -18,7 +18,7 @@ If you visualize `fg` with ProfileView, you may see something like this:
 
 From the standpoint of precompilation, this has some obvious problems:
 
-- even though we called a single method, `OptimizeMe.main()`, there are many distinct flames separated by blank spaces. This indicates that many calls are being made by runtime dispatch:  each separate flame is a fresh entrance into inference.
+- even though we called a single method, `OptimizeMe.main()`, the bottom row consists of many boxes, each the base of a distinct flame. This indicates that many calls are being made by runtime dispatch:  each separate flame is a fresh entrance into inference.
 - several of the flames are marked in red, indicating that they are not naively precompilable (see the [Tutorial on `@snoop_inference`](@ref)). While `@compile_workload` can handle these flames, an even more robust solution is to eliminate them altogether.
 
 Our goal will be to improve the design of `OptimizeMe` to make it more readily precompilable.
