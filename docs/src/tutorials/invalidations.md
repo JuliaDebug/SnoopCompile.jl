@@ -204,7 +204,7 @@ Choose a call for analysis (q to quit):
 
 This is an interactive REPL-menu, described more completely (via text and video) at [ascend](https://github.com/JuliaDebug/Cthulhu.jl?tab=readme-ov-file#usage-ascend).
 
-There are quite a few other tools for working with `invs` and `trees`, see the [Reference](@ref). If your list of invalidations is dauntingly large, you may be interested in [precompile_blockers](@ref).
+There are quite a few other tools for working with `invs` and `trees`, see the [Reference](@ref). If your list of invalidations is dauntingly large, you may be interested in [`precompile_blockers`](@ref).
 
 ### Why the invalidations occur
 
