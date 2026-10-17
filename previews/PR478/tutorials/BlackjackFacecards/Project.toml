@@ -1,0 +1,7 @@
+name = "BlackjackFacecards"
+uuid = "d90a71cb-262b-4770-a132-af75ab7d2d54"
+version = "0.1.0"
+authors = ["runner "]
+
+[deps]
+Blackjack = "5b11e0fb-90dc-4401-924e-7ea1bdde655d"
