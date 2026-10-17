@@ -2,11 +2,11 @@
 
 julia_version = "1.12.0"
 manifest_format = "2.0"
-project_hash = "b6aa477e4aadabb59b1fd2fe2fb1e58fe5cfa2cf"
+project_hash = "cf1f4eee3716cb1e7fe6ba9a6709f313003f0630"
 
 [[deps.Blackjack]]
 path = "."
-uuid = "aca55a6f-ba0b-455a-acd9-ff1c64426bca"
+uuid = "fbbd101e-d4ff-4153-b5ac-0210c4678f13"
 version = "0.1.0"
 
 [[deps.Dates]]
@@ -22,9 +22,9 @@ version = "1.3.4"
 
 [[deps.Preferences]]
 deps = ["TOML"]
-git-tree-sha1 = "5005266de4bfe50e53ff44a5cb5c540b6e47a254"
+git-tree-sha1 = "aef1987d90dcc2e2cbd919ad10b2d25bcce4f418"
 uuid = "21216c6a-2e73-6563-6e65-726566657250"
-version = "1.6.0"
+version = "1.6.1"
 
 [[deps.Printf]]
 deps = ["Unicode"]
