@@ -253,6 +253,13 @@ function inclusive(node::InferenceTimingNode; kwargs...)
     return t
 end
 
+# SnoopCompile ≤ 3.2.9 calls this method; its result is not consistent with `inclusive(node)`.
+function inclusive(ci::CodeInstance; include_llvm::Bool=true)
+    Base.depwarn("`inclusive(::CodeInstance)` is deprecated; use `inclusive(::InferenceTimingNode)` instead.", :inclusive)
+    return Float64(reinterpret(Float16, ci.time_infer_total)) +
+        include_llvm * Float64(reinterpret(Float16, ci.time_compile))
+end
+
 """
     exclusive(node::InferenceTimingNode; include_llvm::Bool=true)
 
