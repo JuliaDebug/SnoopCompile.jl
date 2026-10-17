@@ -510,6 +510,14 @@ function invalidation_trees_logedges(list; exclude_corecompiler::Bool=true)
     return mminvs
 end
 
+function _index_mi_nodes!(d::Dict{MethodInstance,Tuple{Int,InstanceNode}}, nodes::Vector{InstanceNode}, tree_idx::Int)
+    for node in nodes
+        isdummy(node) && continue
+        d[node.mi] = (tree_idx, node)
+        _index_mi_nodes!(d, node.children, tree_idx)
+    end
+end
+
 """
     trees = invalidation_trees(list; consolidate=true)
 
@@ -555,14 +563,6 @@ of trees if a package creates many methods for a single function.
 
 For more information, see the tutorials in the online documentation.
 """
-function _index_mi_nodes!(d::Dict{MethodInstance,Tuple{Int,InstanceNode}}, nodes::Vector{InstanceNode}, tree_idx::Int)
-    for node in nodes
-        isdummy(node) && continue
-        d[node.mi] = (tree_idx, node)
-        _index_mi_nodes!(d, node.children, tree_idx)
-    end
-end
-
 function invalidation_trees(list::InvalidationLists; consolidate::Bool=true, kwargs...)
     mtrees = invalidation_trees_logmeths(list.logmeths; kwargs...)
     etrees = invalidation_trees_logedges(list.logedges; kwargs...)
