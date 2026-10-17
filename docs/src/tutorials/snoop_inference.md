@@ -55,7 +55,7 @@ julia> tinf = @snoop_inference FlattenDemo.packintype(1);
 julia> using SnoopCompile
 
 julia> tinf
-InferenceTimingNode: 0.000010/0.002443 on MethodInstance for Base.Compiler.Timings.ROOT() with 1 direct children
+InferenceTimingNode: 0.000007/0.003824 on Base.Compiler.Timings.ROOT() with 1 direct children
 ```
 
 !!! tip
@@ -90,18 +90,17 @@ We can do that with the [AbstractTrees](https://github.com/JuliaCollections/Abst
 julia> using AbstractTrees
 
 julia> print_tree(tinf, maxdepth=100)
-InferenceTimingNode: 0.000010/0.002443 on MethodInstance for Base.Compiler.Timings.ROOT() with 1 direct children
-└─ InferenceTimingNode: 0.001744/0.002433 on MethodInstance for Main.var"Main".FlattenDemo.packintype(::Int64) with 2 direct children
-   ├─ InferenceTimingNode: 0.000067/0.000070 on MethodInstance for MyType{Int64}(::Int64) with 0 direct children
-   └─ InferenceTimingNode: 0.000140/0.000415 on MethodInstance for Main.var"Main".FlattenDemo.dostuff(::MyType{Int64}) with 2 direct children
-      ├─ InferenceTimingNode: 0.000090/0.000124 on MethodInstance for Main.var"Main".FlattenDemo.extract(::MyType{Int64}) with 1 direct children
-      │  └─ InferenceTimingNode: 0.000027/0.000027 on MethodInstance for getproperty(::MyType{Int64}, ::Symbol) with 0 direct children
-      └─ InferenceTimingNode: 0.000073/0.000073 on MethodInstance for Main.var"Main".FlattenDemo.domath(::Int64) with 0 direct children
+InferenceTimingNode: 0.000007/0.003824 on Base.Compiler.Timings.ROOT() with 1 direct children
+└─ InferenceTimingNode: 0.002838/0.003816 on Main.var"Main".FlattenDemo.packintype(::Int64) with 2 direct children
+   ├─ InferenceTimingNode: 0.000137/0.000141 on Main.var"Main".FlattenDemo.MyType{Int64}(::Int64) with 0 direct children
+   └─ InferenceTimingNode: 0.000170/0.000559 on Main.var"Main".FlattenDemo.dostuff(::Main.var"Main".FlattenDemo.MyType{Int64}) with 2 direct children
+      ├─ InferenceTimingNode: 0.000124/0.000180 on Main.var"Main".FlattenDemo.extract(::Main.var"Main".FlattenDemo.MyType{Int64}) with 1 direct children
+      │  └─ InferenceTimingNode: 0.000042/0.000043 on getproperty(::Main.var"Main".FlattenDemo.MyType{Int64}, ::Symbol) with 0 direct children
+      └─ InferenceTimingNode: 0.000092/0.000093 on Main.var"Main".FlattenDemo.domath(::Int64) with 0 direct children
 ```
 
 This tree structure reveals the caller-callee relationships, showing the specific types that were used for each `MethodInstance`.
-Indeed, as the calls to `getproperty` reveal, it goes beyond the types and even shows the results of [constant propagation](https://en.wikipedia.org/wiki/Constant_folding);
-the `getproperty(::MyType{Int64}, x::Symbol)` corresponds to `y.x` in the definition of `extract`.
+For example, `getproperty(::MyType{Int64}, ::Symbol)` corresponds to `y.x` in the definition of `extract`.
 
 !!! note
     Generally we speak of [call graphs](https://en.wikipedia.org/wiki/Call_graph) rather than call trees.
@@ -122,10 +121,13 @@ The first number is the *exclusive* inference time (in seconds), meaning the tim
 The second number is the *inclusive* time, which is the exclusive time plus the time spent on the callees.
 Therefore, the inclusive time is always at least as large as the exclusive time.
 
-The `ROOT` node is a bit different: its exclusive time measures the time spent on all operations *except* inference.
-In this case, we see that the entire call took approximately 3.3ms, of which 2.7ms was spent on activities besides inference.
-Almost all of that was code-generation, but it also includes the time needed to run the code.
-Just 0.55ms was needed to run type-inference on this entire series of calls.
+The `ROOT` node is a bit different: it is a placeholder for the top of the tree, not a function that was inferred, so its exclusive time is negligible.
+Its inclusive time summarizes all the compilation recorded by `@snoop_inference`.
+
+By default, both numbers also include the time LLVM spent generating native code for the `MethodInstance`;
+pass `include_llvm=false` to [`exclusive`](@ref) and [`inclusive`](@ref) to obtain the time for type-inference alone.
+In this demo, only `packintype` was compiled to native code (its callees were inlined into it),
+and native code generation accounts for most of its exclusive time.
 As you will quickly discover, inference takes much more time on more complicated code.
 
 We can also display this tree as a flame graph, using the [ProfileView.jl](https://github.com/timholy/ProfileView.jl) package:
@@ -152,7 +154,7 @@ Users are encouraged to read the ProfileView documentation to understand how to 
 - left-clicking on a box causes the full `MethodInstance` to be printed in your REPL session
 - right-clicking on a box opens the corresponding method in your editor
 - ctrl-click can be used to zoom in
-- empty horizontal spaces correspond to activities other than type-inference
+- empty horizontal space above a box corresponds to time not accounted for by that box's callees
 - any boxes colored red (there are none in this particular example, but you'll see some later) correspond to *naively non-precompilable* `MethodInstance`s, in which the method is owned by one module but the types are from another unrelated module. Such `MethodInstance`s are omitted from the precompile cache file unless they've been "marked" by `PrecompileTools.@compile_workload` or an explicit `precompile` directive. See [`SnoopCompile.isprecompilable`](@ref) for further explanation and some examples.
 - any boxes colored orange-yellow (there is one in this demo) correspond to methods inferred for specific constants (constant propagation).
 
