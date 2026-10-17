@@ -1832,40 +1832,44 @@ the time not spent on its callees. The total width of the flamegraph is set from
 node.
 """
 function FlameGraphs.flamegraph(tinf::InferenceTimingNode; include_llvm::Bool=true, tmin = 0.0, excluded_modules=Set([Main::Module]), mode=nothing)
-    duration(node) = inclusive(node; include_llvm)
-
     isROOT(tinf) && isempty(tinf.children) && @warn "Empty profile: no compilation was recorded."
-    ctimes = pushfirst!(cumsum(duration.(tinf.children)), 0)
-    if duration(tinf) > ctimes[end]
-        push!(ctimes, duration(tinf))
+    # Each frame's width in nanoseconds. Integer widths add up exactly over the tree, so
+    # the span of each frame lies within its caller's and siblings do not overlap.
+    widths = IdDict{InferenceTimingNode,Int}()
+    function setwidth!(node)
+        w = round(Int, exclusive(node; include_llvm)*1e9)
+        for child in node.children
+            w += setwidth!(child)
+        end
+        return widths[node] = w
     end
+    setwidth!(tinf)
+    span = 0:widths[tinf]-1
     io = IOBuffer()
-    # Compute a "root" frame for the top-level node, to cover the whole profile
-    node_data, _ = _flamegraph_frame(duration, io, tinf, 0, false, excluded_modules, mode; stop_secs=ctimes[end])
+    # A "root" frame for the top-level node covers the whole profile
+    node_data, _ = _flamegraph_frame(io, tinf, span, false, excluded_modules, mode)
     root = Node(node_data)
     if !isROOT(tinf)
-        node_data, child_check_precompilable = _flamegraph_frame(duration, io, tinf, 0, true, excluded_modules, mode)
+        node_data, _ = _flamegraph_frame(io, tinf, span, true, excluded_modules, mode)
         root = addchild(root, node_data)
     end
-    return _build_flamegraph!(duration, root, io, tinf, ctimes, tmin, true, excluded_modules, mode)
+    return _build_flamegraph!(root, io, tinf, first(span), widths, tmin, include_llvm, true, excluded_modules, mode)
 end
-function _build_flamegraph!(duration, root, io::IO, node::InferenceTimingNode, ctimes, tmin, check_precompilable, excluded_modules, mode)
-    start_secs = first(ctimes)
-    for (i, child) in pairs(node.children)
-        if duration(child) > tmin
-            node_data, child_check_precompilable = _flamegraph_frame(duration, io, child, ctimes[i], check_precompilable, excluded_modules, mode)
-            node = addchild(root, node_data)
-            if !isempty(child.children)
-                newtimes = pushfirst!(cumsum(duration.(child.children)), 0) .+ start_secs
-                _build_flamegraph!(duration, node, io, child, newtimes, tmin, child_check_precompilable, excluded_modules, mode)
-            end
+function _build_flamegraph!(root, io::IO, node::InferenceTimingNode, start::Int, widths, tmin, include_llvm, check_precompilable, excluded_modules, mode)
+    for child in node.children
+        w = widths[child]
+        if inclusive(child; include_llvm) > tmin
+            node_data, child_check_precompilable = _flamegraph_frame(io, child, start:start+w-1, check_precompilable, excluded_modules, mode)
+            fgchild = addchild(root, node_data)
+            _build_flamegraph!(fgchild, io, child, start, widths, tmin, include_llvm, child_check_precompilable, excluded_modules, mode)
         end
+        start += w
     end
     return root
 end
 
 # Create a profile frame for this node
-function _flamegraph_frame(duration, io::IO, node::InferenceTimingNode, start_secs, check_precompilable::Bool, excluded_modules, mode; stop_secs=nothing)
+function _flamegraph_frame(io::IO, node::InferenceTimingNode, span::UnitRange{Int}, check_precompilable::Bool, excluded_modules, mode)
     function func_name(mi::MethodInstance, ::Nothing)
         m = mi.def
         return isa(m, Method) ? string(m.module, '.', m.name) : string(m, '.', "thunk")
@@ -1909,11 +1913,7 @@ function _flamegraph_frame(duration, io::IO, node::InferenceTimingNode, start_se
     if hasconstprop(InferenceTiming(node))
         status |= FlameGraphs.gc_event
     end
-    if stop_secs === nothing
-        stop_secs = duration(node) + start_secs
-    end
-    range = round(Int, start_secs*1e9) : round(Int, (stop_secs - start_secs)*1e9)
-    return FlameGraphs.NodeData(sf, status, range), check_precompilable
+    return FlameGraphs.NodeData(sf, status, span), check_precompilable
 end
 
 hasconstprop(node) = false    # FIXME
@@ -1935,26 +1935,6 @@ function frame_name(io::IO, name, @nospecialize(tt::Type{<:Tuple}))
         @warn "Error displaying frame: $e"
         return name
     end
-end
-
-# NOTE: The "root" node doesn't cover the whole profile, because it's only the _complement_
-# of the inference times (so it's missing the _overhead_ from the measurement).
-# SO we need to manually create a root node that covers the whole thing.
-function max_end_time(node::InferenceTimingNode, recursive::Bool=false, tmax=-one(node.start_time))
-    # It's possible that node is already the longest-reaching node.
-    t_end = node.start_time + inclusive(node)
-    # It's also possible that the last child extends past the end of node. (I think this is
-    # possible because of the small unmeasured overhead in computing these measurements.)
-    last_node = isempty(node.children) ? node : node.children[end]
-    child_end = last_node.start_time + inclusive(last_node)
-    # Return the maximum end time to make sure the top node covers the entire graph.
-    tmax = max(t_end, child_end, tmax)
-    if recursive
-        for child in node.children
-            tmax = max_end_time(child, true, tmax)
-        end
-    end
-    return tmax
 end
 
 for IO in (IOContext{Base.TTY}, IOContext{IOBuffer}, IOBuffer)

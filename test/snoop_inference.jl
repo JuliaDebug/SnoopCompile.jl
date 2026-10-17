@@ -645,12 +645,25 @@ end
             SnoopCompile.methodinstance(node.data.sf.linfo).def.name == tgtname
         end
     end
-    # Test that the span covers the whole tree, and check for const-prop
+    # The width of the flamegraph is the total inclusive time, with each frame's width
+    # rounded to the nanosecond
+    @test abs(length(fg.data.span) - inclusive(tinf)*1e9) <= count(Returns(true), AbstractTrees.PreOrderDFS(tinf))
+    # Each frame's span starts with its caller's span and lies within it; siblings follow
+    # one another without overlap. Also check for const-prop.
     has_constprop = false
-    for leaf in AbstractTrees.PreOrderDFS(fg)
-        @test leaf.data.span.start in fg.data.span
-        @test leaf.data.span.stop in fg.data.span
-        has_constprop |= leaf.data.status & FlameGraphs.gc_event != 0x0
+    for fgnode in AbstractTrees.PreOrderDFS(fg)
+        span = fgnode.data.span
+        @test !isempty(span)
+        @test first(span) >= first(fg.data.span) && last(span) <= last(fg.data.span)
+        children = collect(AbstractTrees.children(fgnode))
+        if !isempty(children)
+            @test first(children[1].data.span) == first(span)
+            @test last(children[end].data.span) <= last(span)
+            for (a, b) in zip(children[1:end-1], children[2:end])
+                @test first(b.data.span) == last(a.data.span) + 1
+            end
+        end
+        has_constprop |= fgnode.data.status & FlameGraphs.gc_event != 0x0
     end
     @test_broken has_constprop
 
