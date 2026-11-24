@@ -1,7 +1,8 @@
 export @snoop_inference
 
 const snoop_inference_lock = ReentrantLock()
-const newly_inferred = CodeInstance[]
+# The runtime requires a `Vector{Any}`, as it also pushes MethodInstances while generating output.
+const newly_inferred = Any[]
 const inference_entrance_backtraces = []
 
 function start_tracking()
@@ -65,7 +66,7 @@ macro snoop_inference(cmd)
         finally
             $(SnoopCompileCore.stop_tracking)()
         end
-        $timingtree($(SnoopCompileCore.newly_inferred), copy($(SnoopCompileCore.inference_entrance_backtraces)))
+        $timingtree($(CodeInstance)[ci for ci in $(SnoopCompileCore.newly_inferred) if ci isa $(CodeInstance)], copy($(SnoopCompileCore.inference_entrance_backtraces)))
     end)
 end
 
